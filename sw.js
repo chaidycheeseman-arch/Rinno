@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rinno-cache-20260513-private-modal-flow-0147';
+const CACHE_NAME = 'rinno-cache-20260513-private-left-send-0204';
 const PRECACHE_URLS = [
     './',
     'index.html',
@@ -11,7 +11,7 @@ const PRECACHE_URLS = [
     'app/style/css/style.css?v=20260425-top-chrome-controls-1',
     'app/settings/css/settings.css?v=20260510-update-modal-0122',
     'app/prologue/css/prologue.css?v=20260510-ios-viewport-bottom-0116',
-    'app/private/css/private.css?v=20260513-private-modal-flow-0147',
+    'app/private/css/private.css?v=20260513-private-left-send-0204',
     'app/private/css/private.tail-fix.css?v=20260429-chat-shell-tail-fix-1',
     'app/letter/css/letter.css?v=20260423-click-cleanup-3',
     'app/community/css/community.css?v=20260510-ios-viewport-bottom-0116',
@@ -27,7 +27,7 @@ const PRECACHE_URLS = [
     'app/_shared/css/frame-shell.css?v=20260512-update-log-0142',
     'app/_shared/css/contact-homepage-overrides.css?v=20260510-ios-viewport-bottom-0116',
     'app/_shared/css/safe-area.css?v=20260510-ios-viewport-bottom-0116',
-    'script.js?v=20260513-private-modal-flow-0147',
+    'script.js?v=20260513-private-left-send-0204',
     'app/style/tpl/style.tpl?v=20260501-dossier-private-fix-4',
     'app/settings/tpl/settings.tpl?v=20260510-update-modal-0122',
     'app/prologue/tpl/prologue.tpl?v=20260501-dossier-private-fix-4',
@@ -45,7 +45,7 @@ const PRECACHE_URLS = [
     'app/mijing/html/mijing-frame.html?v=20260510-trace-card-monitor-0093',
     'app/cinema/html/cinema-frame.html?v=20260510-update-modal-0122',
     'app/fuyue/html/fuyue-frame.html?v=20260512-offline-rendezvous-0140',
-    'app/private/js/private.js?v=20260513-private-modal-flow-0147',
+    'app/private/js/private.js?v=20260513-private-left-send-0204',
     'app/trace/html/trace-frame.html?v=20260510-trace-card-monitor-0093',
     'app/letter/js/letter.js?v=20260501-dossier-private-fix-4',
     'app/settings/js/settings.js?v=20260510-update-modal-0122',
