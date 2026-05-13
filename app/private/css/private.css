@@ -20,6 +20,10 @@
     transition: transform 0.24s ease, opacity 0.18s ease;
 }
 
+#private-app [hidden] {
+    display: none;
+}
+
 /* Private rose-grey editorial polish */
 .private-chat-screen {
     --private-ink: #1f1c1f;
@@ -8665,7 +8669,24 @@
     user-select: none;
 }
 
-.private-user-preset-modal,
+.private-user-preset-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 44;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: calc(24px + var(--rinno-safe-area-top, 0px)) 20px calc(24px + var(--rinno-safe-area-bottom, 0px));
+    background: rgba(255, 255, 255, 0.66);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+    transition: opacity 0.18s ease;
+}
+
 .private-settings-modal {
     position: fixed;
     inset: 0;
@@ -8682,15 +8703,6 @@
     transition: opacity 0.18s ease;
 }
 
-.private-user-preset-modal {
-    z-index: 44;
-}
-
-#private-user-preset-modal {
-    align-items: center;
-    padding: 24px 20px calc(24px + var(--rinno-safe-area-bottom, 0px));
-}
-
 .private-user-preset-modal.active,
 .private-settings-modal.active {
     opacity: 1;
@@ -8700,7 +8712,7 @@
 .private-user-preset-dialog,
 .private-settings-dialog {
     width: min(430px, calc(var(--app-width) - 40px));
-    max-height: min(calc(var(--app-height) * 0.72), 560px);
+    max-height: min(calc(var(--app-height, 100vh) - 56px - var(--rinno-safe-area-top, 0px) - var(--rinno-safe-area-bottom, 0px)), 560px);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -10996,12 +11008,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 34px 20px;
+    box-sizing: border-box;
+    padding: calc(24px + var(--rinno-safe-area-top, 0px)) 20px calc(24px + var(--rinno-safe-area-bottom, 0px));
     background: rgba(255, 255, 255, 0.66);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     opacity: 0;
     pointer-events: none;
+    overflow: hidden;
     transition: opacity 0.18s ease;
 }
 
@@ -11016,7 +11030,7 @@
 
 .private-contact-account-dialog {
     width: min(100%, 430px);
-    max-height: min(78dvh, 680px);
+    max-height: min(calc(var(--app-height, 100vh) - 56px - var(--rinno-safe-area-top, 0px) - var(--rinno-safe-area-bottom, 0px)), 680px);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -11243,11 +11257,11 @@
 @media (max-width: 520px) {
     .private-contact-account-modal {
         align-items: center;
-        padding: 24px 16px calc(24px + var(--rinno-safe-area-bottom, 0px));
+        padding: calc(22px + var(--rinno-safe-area-top, 0px)) 16px calc(22px + var(--rinno-safe-area-bottom, 0px));
     }
 
     .private-contact-account-dialog {
-        max-height: min(76dvh, 620px);
+        max-height: min(calc(var(--app-height, 100vh) - 48px - var(--rinno-safe-area-top, 0px) - var(--rinno-safe-area-bottom, 0px)), 620px);
         padding: 16px;
     }
 
@@ -12908,7 +12922,7 @@ body.dark-mode #private-app .private-contact-chat-pay-status-row strong {
     pointer-events: none;
 }
 
-#private-app.private-app > * {
+#private-app.private-app > .private-screen {
     position: relative;
     z-index: 1;
 }
