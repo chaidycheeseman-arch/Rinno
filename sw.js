@@ -1,57 +1,65 @@
-const CACHE_NAME = 'rinno-cache-v20260428-app-icon-refresh-1';
+const CACHE_NAME = 'rinno-cache-20260512-echo-paper-0145';
 const PRECACHE_URLS = [
     './',
     'index.html',
     'manifest.json',
-    'manifest.json?v=20260428-app-icon-refresh-1',
+    'manifest.json?v=20260510-wanye-sensual-tags-0081',
     'icon-192-v20260428-app-refresh-1.png',
     'icon-512-v20260428-app-refresh-1.png',
     'https://unpkg.com/dexie@3.2.4/dist/dexie.js',
-    'style.css?v=20260425-top-chrome-controls-1',
-    'app/style/style.css?v=20260425-top-chrome-controls-1',
-    'app/settings/settings.css?v=20260423-click-cleanup-3',
-    'app/prologue/prologue.css?v=20260423-click-cleanup-3',
-    'app/private/private.css?v=20260427-private-chat-rinno-sticker-fix-15',
-    'app/letter/letter.css?v=20260423-click-cleanup-3',
-    'app/community/community.css?v=20260423-click-cleanup-3',
-    'app/encounter/encounter.css?v=20260423-click-cleanup-3',
-    'app/dossier/dossier.css?v=20260423-upload-image-cover-1',
-    'app/wanye/wanye.css?v=20260423-new-apps-1',
-    'app/lingguang/lingguang.css?v=20260423-new-apps-1',
-    'app/guide/guide.css?v=20260423-new-apps-1',
-    'app/zhenxuan/zhenxuan.css?v=20260427-zhenxuan-icon-fix-3',
-    'app/phone/phone.css?v=20260427-zhenxuan-phone-restore-1',
-    'app/theme-bridge.css?v=20260427-zhenxuan-phone-restore-1',
-    'app/contact-homepage-overrides.css?v=20260427-private-chat-recall-translucent-fix-9',
-    'app/safe-area.css?v=20260427-private-chat-direct-fix-3',
-    'script.js?v=20260427-zhenxuan-polish-2',
-    'app/style/style.tpl',
-    'app/settings/settings.tpl',
-    'app/prologue/prologue.tpl',
-    'app/private/private.tpl',
-    'app/letter/letter.tpl',
-    'app/community/community.tpl',
-    'app/encounter/encounter.tpl',
-    'app/dossier/dossier.tpl',
-    'app/wanye/wanye.tpl',
-    'app/lingguang/lingguang.tpl',
-    'app/guide/guide.tpl',
-    'app/zhenxuan/zhenxuan.tpl',
-    'app/phone/phone.tpl',
-    'app/private/private.js',
-    'app/letter/letter.js',
-    'app/settings/settings.js',
-    'app/prologue/prologue.js',
-    'app/style/style.js',
-    'app/community/community.js',
-    'app/encounter/encounter.js',
-    'app/dossier/dossier.js',
-    'app/wanye/wanye.js',
-    'app/lingguang/lingguang.js',
-    'app/guide/guide.js',
-    'app/zhenxuan/zhenxuan.js',
-    'app/phone/phone.js',
-    'app/style/assets/fonts/xinjie-10.ttf'
+    'style.css?v=20260512-editorial-ui-0144',
+    'app/style/css/style.css?v=20260425-top-chrome-controls-1',
+    'app/settings/css/settings.css?v=20260510-update-modal-0122',
+    'app/prologue/css/prologue.css?v=20260510-ios-viewport-bottom-0116',
+    'app/private/css/private.css?v=20260512-keepalive-tokens-0143',
+    'app/private/css/private.tail-fix.css?v=20260429-chat-shell-tail-fix-1',
+    'app/letter/css/letter.css?v=20260423-click-cleanup-3',
+    'app/community/css/community.css?v=20260510-ios-viewport-bottom-0116',
+    'app/encounter/css/encounter.css?v=20260423-click-cleanup-3',
+    'app/dossier/css/dossier.css?v=20260510-ios-viewport-bottom-0116',
+    'app/wanye/css/wanye.css?v=20260510-ios-viewport-bottom-0116',
+    'app/lingguang/css/lingguang.css?v=20260423-new-apps-1',
+    'app/guide/css/guide.css?v=20260423-new-apps-1',
+    'app/zhenxuan/css/zhenxuan.css?v=20260510-ios-viewport-bottom-0116',
+    'app/phone/css/phone.css?v=20260510-ios-viewport-bottom-0116',
+    'app/assets/css/assets.css?v=20260510-ios-viewport-bottom-0116',
+    'app/_shared/css/theme-bridge.css?v=20260512-editorial-ui-0144',
+    'app/_shared/css/frame-shell.css?v=20260512-update-log-0142',
+    'app/_shared/css/contact-homepage-overrides.css?v=20260510-ios-viewport-bottom-0116',
+    'app/_shared/css/safe-area.css?v=20260510-ios-viewport-bottom-0116',
+    'script.js?v=20260512-echo-paper-0145',
+    'app/style/tpl/style.tpl?v=20260501-dossier-private-fix-4',
+    'app/settings/tpl/settings.tpl?v=20260510-update-modal-0122',
+    'app/prologue/tpl/prologue.tpl?v=20260501-dossier-private-fix-4',
+    'app/private/tpl/private.tpl?v=20260510-update-modal-0122',
+    'app/letter/tpl/letter.tpl?v=20260501-dossier-private-fix-4',
+    'app/community/tpl/community.tpl?v=20260510-community-x-real-light-0115',
+    'app/encounter/tpl/encounter.tpl?v=20260501-dossier-private-fix-4',
+    'app/dossier/tpl/dossier.tpl?v=20260501-dossier-private-fix-4',
+    'app/wanye/tpl/wanye.tpl?v=20260510-v0081-wanye-sensual-tags',
+    'app/lingguang/tpl/lingguang.tpl?v=20260501-dossier-private-fix-4',
+    'app/guide/tpl/guide.tpl?v=20260501-dossier-private-fix-4',
+    'app/zhenxuan/tpl/zhenxuan.tpl?v=20260510-v0112-private-pay-status',
+    'app/phone/tpl/phone.tpl?v=20260501-dossier-private-fix-4',
+    'app/assets/tpl/assets.tpl?v=20260501-dossier-private-fix-4',
+    'app/mijing/html/mijing-frame.html?v=20260510-trace-card-monitor-0093',
+    'app/cinema/html/cinema-frame.html?v=20260510-update-modal-0122',
+    'app/fuyue/html/fuyue-frame.html?v=20260512-offline-rendezvous-0140',
+    'app/private/js/private.js?v=20260512-keepalive-tokens-0143',
+    'app/trace/html/trace-frame.html?v=20260510-trace-card-monitor-0093',
+    'app/letter/js/letter.js?v=20260501-dossier-private-fix-4',
+    'app/settings/js/settings.js?v=20260510-update-modal-0122',
+    'app/prologue/js/prologue.js?v=20260501-dossier-private-fix-4',
+    'app/style/js/style.js?v=20260512-editorial-ui-0144',
+    'app/community/js/community.js?v=20260510-community-x-real-light-0115',
+    'app/encounter/js/encounter.js?v=20260501-dossier-private-fix-4',
+    'app/dossier/js/dossier.js?v=20260509-v0087-right-arrow-dossier-char-editor',
+    'app/wanye/js/wanye.js?v=20260510-v0081-wanye-sensual-tags',
+    'app/lingguang/js/lingguang.js?v=20260501-dossier-private-fix-4',
+    'app/guide/js/guide.js?v=20260501-dossier-private-fix-4',
+    'app/zhenxuan/js/zhenxuan.js?v=20260510-v0112-private-pay-status',
+    'app/phone/js/phone.js?v=20260501-dossier-private-fix-4',
+    'app/assets/js/assets.js?v=20260509-v0091-private-pay-password'
 ];
 
 async function warmPrecache() {
@@ -160,6 +168,38 @@ async function handleAsset(event) {
 
     return Response.error();
 }
+
+
+
+self.addEventListener('message', event => {
+    const data = event.data || {};
+    if (data.type !== 'RINNO_SHOW_NOTIFICATION') return;
+    const title = String(data.title || 'Rinno').trim() || 'Rinno';
+    const options = data.options && typeof data.options === 'object' ? data.options : {};
+    event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', event => {
+    const data = event.notification?.data || {};
+    event.notification.close();
+    const contactId = String(data.contactId || '');
+    const targetUrl = `./?rinnoOpen=private&contactId=${encodeURIComponent(contactId)}`;
+    event.waitUntil((async () => {
+        const windowClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+        for (const client of windowClients) {
+            if ('focus' in client) {
+                await client.focus();
+                try {
+                    client.postMessage({ type: 'RINNO_OPEN_PRIVATE_CHAT', contactId });
+                } catch (error) {
+                    // Ignore clients that cannot receive the message.
+                }
+                return;
+            }
+        }
+        if (self.clients.openWindow) await self.clients.openWindow(targetUrl);
+    })());
+});
 
 self.addEventListener('fetch', event => {
     if (!canHandleRequest(event.request)) return;

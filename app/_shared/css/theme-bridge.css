@@ -1,0 +1,3375 @@
+/* Global theme bridge: keeps every app depth on the active Style palette. */
+:where(
+    .style-app,
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app,
+    .guide-app,
+    .zhenxuan-app,
+    .phone-app,
+    .assets-app
+) {
+    --rinno-app-ink: var(--text-main);
+    --rinno-app-muted: var(--text-sub);
+    --rinno-app-accent: var(--style-accent);
+    --rinno-app-accent-strong: var(--style-accent-strong);
+    --rinno-app-accent-soft: var(--style-accent-soft);
+    --rinno-app-line: var(--style-line-color);
+    --rinno-app-faint-line: var(--style-faint-line-color);
+    --rinno-app-card: var(--style-card-bg);
+    --rinno-app-soft-card: var(--style-soft-card-bg);
+    --rinno-app-shadow: var(--style-control-shadow);
+    color: var(--rinno-app-ink);
+    background: var(--style-app-bg);
+    font-family: var(--font-family);
+    accent-color: var(--rinno-app-accent-strong);
+}
+
+body {
+    --rinno-page-preset-card-radius: 22px;
+}
+
+body[data-style-page-preset="compact"] {
+    --rinno-page-preset-card-radius: 16px;
+}
+
+body[data-style-page-preset="editorial"] {
+    --rinno-page-preset-card-radius: 22px;
+}
+
+body[data-style-page-preset="airy"] {
+    --rinno-page-preset-card-radius: 30px;
+}
+
+:where(
+    .style-app,
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app,
+    .guide-app,
+    .zhenxuan-app,
+    .phone-app,
+    .assets-app
+) {
+    top: var(--rinno-visual-viewport-top, 0px);
+    left: 0;
+    right: auto;
+    bottom: auto;
+    width: var(--app-width, 100vw);
+    height: var(--app-height, 100vh);
+    min-height: 0;
+    transform-origin: center center;
+}
+
+:where(
+    .style-app,
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app,
+    .guide-app,
+    .zhenxuan-app,
+    .phone-app,
+    .assets-app
+):not(.active) {
+    transform: translate3d(100%, 0, 0);
+}
+
+:where(
+    .style-app,
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app,
+    .guide-app,
+    .zhenxuan-app,
+    .phone-app,
+    .assets-app
+).active {
+    transform: translate3d(0, 0, 0);
+}
+
+body[data-style-page-preset="editorial"] :where(
+    .style-app,
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app,
+    .guide-app,
+    .zhenxuan-app,
+    .phone-app,
+    .assets-app
+) :is(h1, h2, h3, [class*="-title"], [class*="headline"], [class*="heading"]) {
+    font-family: "Times New Roman", Georgia, "Songti SC", serif;
+    letter-spacing: 0.055em;
+}
+
+:where(
+    .style-app,
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app,
+    .guide-app,
+    .zhenxuan-app,
+    .phone-app,
+    .assets-app
+) :is([class*="card"], [class*="panel"], [class*="dialog"], [class*="sheet"], [class*="hero"]) {
+    border-radius: var(--rinno-page-preset-card-radius);
+}
+
+.community-app,
+.encounter-app {
+    --page-bg: var(--style-page-surface);
+    --accent-rose: var(--style-accent-soft);
+    --ink-main: var(--text-main);
+    --ink-sub: var(--text-sub);
+    --ink-light: var(--style-accent-strong);
+    --glass-bg: var(--style-glass-bg);
+    --glass-border: var(--style-glass-border);
+    --glass-border-light: 1px solid rgba(var(--style-glass-tint-rgb), 0.58);
+    --glass-shadow: var(--style-control-shadow);
+}
+
+.prologue-app {
+    --prologue-ink: var(--text-main);
+    --prologue-muted: var(--text-sub);
+    --prologue-soft: var(--style-accent-strong);
+    --prologue-rose: var(--style-accent);
+    --prologue-blush: var(--style-accent-soft);
+    --prologue-line: var(--style-line-color);
+    --prologue-paper: color-mix(in srgb, var(--style-page-surface) 74%, transparent);
+    --prologue-shadow: var(--style-control-shadow);
+}
+
+.private-app,
+.private-chat-screen {
+    --private-ink: var(--text-main);
+    --private-ink-soft: color-mix(in srgb, var(--text-main) 76%, var(--style-accent-strong));
+    --private-muted: var(--text-sub);
+    --private-muted-2: color-mix(in srgb, var(--text-sub) 62%, var(--style-accent-soft));
+    --private-paper: var(--style-page-surface);
+    --private-paper-2: var(--style-accent-soft);
+    --private-card: color-mix(in srgb, var(--style-page-surface) 72%, transparent);
+    --private-line: var(--style-line-color);
+    --private-shadow: rgba(var(--style-shadow-rgb), 0.06);
+    --private-accent: var(--style-accent);
+    --private-accent-deep: var(--style-accent-strong);
+}
+
+.dossier-app {
+    --dossier-ink: var(--text-main);
+    --dossier-ink-soft: color-mix(in srgb, var(--text-main) 78%, var(--style-accent-strong));
+    --dossier-muted: var(--text-sub);
+    --dossier-muted-soft: color-mix(in srgb, var(--text-sub) 64%, var(--style-accent-soft));
+    --dossier-rose: var(--style-accent);
+    --dossier-rose-deep: var(--style-accent-strong);
+    --dossier-paper: color-mix(in srgb, var(--style-page-surface) 78%, transparent);
+    --dossier-white: var(--style-page-surface);
+    --dossier-line: var(--style-line-color);
+    --dossier-shadow: var(--style-control-shadow);
+}
+
+.guide-app {
+    --guide-ink: var(--text-main);
+    --guide-muted: color-mix(in srgb, var(--text-sub) 90%, var(--style-accent-strong));
+    --guide-line: var(--style-line-color);
+    --guide-sage: color-mix(in srgb, var(--style-accent-soft) 76%, #ffffff);
+    --guide-rose: var(--style-accent);
+}
+
+.guide-top,
+.guide-tabs {
+    background: var(--style-app-top-bg);
+    border-color: var(--rinno-app-line, var(--style-line-color));
+}
+
+.guide-top::after {
+    color: color-mix(in srgb, var(--style-accent-strong) 10%, transparent);
+}
+
+.guide-card,
+.guide-icon-button,
+.guide-tab,
+.guide-check {
+    border-color: var(--rinno-app-line, var(--style-line-color));
+    background: var(--rinno-app-card, var(--style-card-bg));
+    box-shadow: var(--rinno-app-shadow, var(--style-control-shadow)), inset 0 1px 0 rgba(var(--style-glass-tint-rgb), 0.72);
+}
+
+.guide-tab.active,
+.guide-card.done .guide-check {
+    border-color: color-mix(in srgb, var(--style-accent-strong) 26%, transparent);
+    background: linear-gradient(135deg, rgba(var(--style-glass-tint-rgb), 0.92), rgba(var(--style-accent-rgb), 0.18));
+}
+
+.guide-card.done .guide-check::before {
+    border-color: var(--style-accent-strong);
+}
+
+:where(
+    .settings-security-view,
+    .settings-api-view,
+    .settings-debug-view,
+    .private-screen,
+    .private-chat-screen,
+    .private-pane,
+    .private-panel-wrap,
+    .letter-main,
+    .prologue-shell,
+    .prologue-view,
+    .community-app .page-container,
+    .encounter-app .page-container,
+    .dossier-shell,
+    .dossier-stage,
+    .dossier-view,
+    .guide-stage,
+    .dossier-modal,
+    .dossier-profile-modal
+) {
+    color: var(--text-main);
+    background: transparent;
+}
+
+:where(
+    .style-top,
+    .settings-top,
+    .private-chat-top,
+    .letter-top,
+    .prologue-top,
+    .prologue-subtop,
+    .community-app .community-header,
+    .encounter-app .community-header,
+    .dossier-top,
+    .guide-top,
+    .guide-tabs,
+    .zhenxuan-top,
+    .phone-top,
+    .dossier-tabs
+) {
+    background: var(--style-app-top-bg);
+    border-color: var(--rinno-app-line, var(--style-line-color));
+    box-shadow: inset 0 1px 0 rgba(var(--style-glass-tint-rgb), 0.58);
+}
+
+.style-top::after,
+.settings-top::after,
+.letter-top::after,
+.private-chat-top::after,
+.prologue-subtitle::after,
+.community-app .segment-btn.active::after,
+.encounter-app .segment-btn.active::after,
+.dossier-top::before {
+    background: var(--style-line-color);
+}
+
+.style-menu::after,
+.settings-menu::after,
+.letter-issue-mark,
+.prologue-issue-mark,
+.dossier-top::after {
+    color: color-mix(in srgb, var(--style-accent-strong) 10%, transparent);
+}
+
+:where(
+    .style-app,
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app,
+    .guide-app
+) :is(
+    .style-entry-card,
+    .style-theme-card,
+    .style-phone-card,
+    .style-control-block,
+    .style-toggle-row,
+    .style-status-pill,
+    .style-wallpaper-chip,
+    .style-preset-chip,
+    .settings-menu-item,
+    .security-card,
+    .api-section,
+    .api-field,
+    .api-preset-block,
+    .api-preset-dialog,
+    .api-picker-control,
+    .api-picker-select,
+    .api-popover,
+    .api-segmented,
+    .api-ghost-button,
+    .api-modal-dialog,
+    .debug-console,
+    .debug-output,
+    .debug-card,
+    .private-login-card,
+    .private-register-hero,
+    .private-article,
+    .private-verify-copy,
+    .private-verify-lines,
+    .private-verified-panel,
+    .private-field,
+    .private-input,
+    .private-avatar-frame,
+    .private-whisper-section,
+    .private-thread-card,
+    .private-contact-card,
+    .private-contact-titlebar,
+    .private-profile-field,
+    .private-profile-identity,
+    .private-persona-card,
+    .private-moment-card,
+    .private-moment-composer,
+    .private-moment-editor,
+    .private-contact-hero,
+    .private-contact-toolbar,
+    .private-moments-toolbar,
+    .private-contact-account-dialog,
+    .letter-compose-panel,
+    .letter-editorial-note,
+    .letter-template-grid,
+    .letter-template,
+    .letter-history-card,
+    .letter-draft-card,
+    .letter-draft-stack,
+    .letter-icon-button,
+    .letter-stamp,
+    .prologue-input,
+    .prologue-textarea,
+    .prologue-dialog,
+    .community-app .mini-card,
+    .community-app .message-item,
+    .community-app .community-dock,
+    .encounter-app .mini-card,
+    .encounter-app .message-item,
+    .encounter-app .community-dock,
+    .dossier-search,
+    .dossier-list-card,
+    .dossier-detail-card,
+    .dossier-editor-card,
+    .dossier-editor,
+    .dossier-field,
+    .dossier-avatar-picker,
+    .dossier-avatar-clear,
+    .dossier-node,
+    .dossier-network-board,
+    .dossier-network-tools,
+    .dossier-network-tool,
+    .dossier-network-zoom,
+    .dossier-network-user-card,
+    .dossier-network-node,
+    .dossier-network-dialog,
+    .dossier-network-subject-dialog,
+    .dossier-network-subject-option,
+    .dossier-network-kind,
+    .dossier-profile-dialog,
+    .dossier-toast,
+    .guide-card,
+    .guide-icon-button,
+    .guide-tab,
+    .guide-check
+) {
+    border-color: var(--rinno-app-line, var(--style-line-color));
+    background: var(--rinno-app-card, var(--style-card-bg));
+    box-shadow: var(--rinno-app-shadow, var(--style-control-shadow)), inset 0 1px 0 rgba(var(--style-glass-tint-rgb), 0.72);
+}
+
+:where(
+    .style-app,
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app
+) :is(input, textarea, select, .api-input, .security-input, .private-message-search, .dossier-search input) {
+    color: var(--text-main);
+    background: transparent;
+    border-color: var(--style-line-color);
+    box-shadow: none;
+}
+
+:where(
+    .style-app,
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app
+) :is(input, textarea)::placeholder {
+    color: color-mix(in srgb, var(--text-sub) 74%, transparent);
+}
+
+:where(
+    .style-title,
+    .settings-title,
+    .private-chat-title,
+    .letter-title,
+    .prologue-title,
+    .prologue-subtitle,
+    .community-app .header-title,
+    .encounter-app .header-title,
+    .dossier-title,
+    .style-label,
+    .settings-label,
+    .settings-subpage-title,
+    .security-row-title,
+    .security-status-title,
+    .api-section-title,
+    .api-modal-title,
+    .debug-console-head,
+    .letter-field-value,
+    .letter-subject,
+    .letter-draft-title,
+    .letter-template-name,
+    .private-title,
+    .private-login-name,
+    .private-article h2,
+    .private-verify-copy h2,
+    .private-whisper-title,
+    .private-contact-titlebar h2,
+    .private-moments-title strong,
+    .private-profile-name,
+    .private-contact-title,
+    .private-thread-title,
+    .prologue-section-title,
+    .prologue-group-title,
+    .prologue-entry-title,
+    .dossier-card-title,
+    .dossier-editor h2,
+    .dossier-network-preview-copy strong,
+    .dossier-profile-dialog h2,
+    .dossier-network-modal-head h2
+) {
+    color: var(--text-main);
+}
+
+:where(
+    .style-name,
+    .style-index,
+    .settings-subpage-kicker,
+    .settings-index,
+    .api-section-index,
+    .api-section-badge,
+    .api-label,
+    .api-range-value,
+    .api-modal-kicker,
+    .letter-kicker,
+    .letter-field-label,
+    .letter-section-label,
+    .letter-card-index,
+    .private-chat-kicker,
+    .private-register-kicker,
+    .private-kicker,
+    .private-whisper-kicker,
+    .private-whisper-count,
+    .private-section-label,
+    .private-card-index,
+    .private-moment-name,
+    .community-app .header-kicker,
+    .community-app .trend-num,
+    .encounter-app .header-kicker,
+    .encounter-app .trend-num,
+    .prologue-kicker,
+    .prologue-section-kicker,
+    .prologue-label,
+    .prologue-badge,
+    .prologue-card-index,
+    .dossier-kicker,
+    .dossier-card-kicker,
+    .dossier-chip,
+    .dossier-count,
+    .dossier-editor-kicker,
+    .dossier-network-preview-copy span,
+    .dossier-network-modal-head .dossier-editor-kicker
+),
+.style-menu::before,
+.settings-menu::before {
+    color: var(--style-accent-strong);
+}
+
+:where(
+    .style-note,
+    .style-subtitle,
+    .settings-subtitle,
+    .settings-account,
+    .settings-subpage-note,
+    .security-row-desc,
+    .security-status-text,
+    .security-message,
+    .api-status,
+    .debug-output,
+    .letter-subtitle,
+    .letter-body,
+    .letter-signature,
+    .letter-editorial-copy,
+    .letter-draft-sub,
+    .letter-draft-date,
+    .private-chat-issue,
+    .private-note,
+    .private-message,
+    .private-login-email,
+    .private-article p,
+    .private-verify-copy p,
+    .private-verify-instructions,
+    .private-contact-note,
+    .private-thread-last,
+    .private-moment-meta,
+    .private-profile-mail,
+    .private-moments-signature,
+    .prologue-note,
+    .prologue-group-note,
+    .prologue-group-sub,
+    .prologue-entry-preview,
+    .community-app .card-excerpt,
+    .community-app .trend-desc,
+    .community-app .msg-text,
+    .encounter-app .card-excerpt,
+    .encounter-app .trend-desc,
+    .encounter-app .msg-text,
+    .dossier-issue,
+    .dossier-card-note,
+    .dossier-editor-subline,
+    .dossier-network-preview-copy small,
+    .dossier-network-preview-copy p,
+    .dossier-node small,
+    .dossier-relation-notes span,
+    .dossier-network-node-copy small
+) {
+    color: var(--text-sub);
+}
+
+:where(
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app
+) :is(
+    button.primary,
+    .primary,
+    .security-action-button.primary,
+    .security-switch.active,
+    .api-modal-button.primary,
+    .api-icon-button,
+    .debug-icon-button,
+    .private-icon-button,
+    .private-inline-button,
+    .private-login-switch,
+    .private-soft-button.primary,
+    .private-action-button.primary,
+    .private-contact-filter button.active,
+    .private-tab.active,
+    .private-settings-login-button,
+    .private-contact-account-add,
+    .letter-send-button,
+    .prologue-fab,
+    .prologue-action-button.primary,
+    .community-app .nav-item.active,
+    .encounter-app .nav-item.active,
+    .dossier-soft-button.primary,
+    .dossier-add-button,
+    .dossier-icon-button,
+    .dossier-tab.active,
+    .dossier-network-kind.active,
+    .dossier-network-subject-option.active,
+    .dossier-network-node.primary,
+    .dossier-node.main
+) {
+    border-color: color-mix(in srgb, var(--style-accent-strong) 26%, rgba(var(--style-glass-tint-rgb), 0.62));
+    background: var(--style-primary-bg);
+    color: var(--style-primary-text);
+    box-shadow: 0 12px 28px rgba(var(--style-shadow-rgb), 0.07), inset 0 1px 0 rgba(var(--style-glass-tint-rgb), 0.78);
+}
+
+:where(
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app
+) :is(button, [role="button"], .nav-item, .segment-btn, .dossier-tab, .private-tab):active {
+    -webkit-tap-highlight-color: transparent;
+}
+
+:where(
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app
+) :is(svg, path, line, polyline, rect, circle) {
+    stroke: currentColor;
+}
+
+.community-app .nav-item.active svg,
+.encounter-app .nav-item.active svg,
+.dossier-tab.active svg,
+.private-tab.active svg {
+    color: var(--style-primary-text);
+    stroke: currentColor;
+}
+
+.private-chat-screen[data-private-current-tab="time"] .private-moments-name {
+    color: var(--private-moments-name-color, var(--text-main));
+}
+
+.private-chat-screen[data-private-current-tab="time"] .private-moments-signature {
+    color: var(--private-moments-signature-color, color-mix(in srgb, var(--text-sub) 78%, transparent));
+}
+
+.dossier-network-modal,
+.dossier-network-subject-modal,
+.dossier-modal,
+.dossier-profile-modal,
+.prologue-modal,
+.api-preset-modal,
+.private-user-preset-modal,
+.private-contact-account-modal,
+.private-moment-modal-backdrop,
+.private-settings-modal:not(.private-settings-page) {
+    background: rgba(255, 255, 255, 0.66);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.dossier-modal::before,
+.dossier-network-modal::before,
+.dossier-network-subject-modal::before,
+.dossier-profile-modal::before,
+.prologue-modal::before,
+.api-preset-modal::before,
+.private-user-preset-modal::before,
+.private-contact-account-modal::before,
+.private-moment-modal-backdrop::before,
+.private-settings-modal:not(.private-settings-page)::before {
+    content: none;
+    background: none;
+    border: 0;
+}
+
+.dossier-editor,
+.dossier-network-dialog,
+.dossier-network-subject-dialog,
+.dossier-profile-dialog,
+.prologue-dialog,
+.api-preset-dialog,
+.private-user-preset-dialog,
+.private-contact-account-dialog,
+.private-moment-composer,
+.private-settings-page,
+.private-settings-page-head {
+    background: var(--style-page-surface, #fffdfd);
+    background-image: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+/* Integration pass: list/project items should sit inside the page, not as cards. */
+:where(
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app
+) :is(
+    .settings-menu-item,
+    .security-card,
+    .api-section,
+    .api-preset-block,
+    .debug-console,
+    .letter-compose-panel,
+    .letter-editorial-note,
+    .letter-template-grid,
+    .letter-template,
+    .letter-draft-card,
+    .private-whisper-section,
+    .private-thread-card,
+    .private-contact-titlebar,
+    .private-contact-toolbar,
+    .private-contact-card,
+    .private-contact-hero,
+    .private-profile-identity,
+    .private-profile-field,
+    .private-persona-card,
+    .private-moment-card,
+    .prologue-group-card,
+    .prologue-entry-card,
+    .prologue-control-block,
+    .dossier-list-card,
+    .dossier-detail-card,
+    .dossier-editor-card,
+    .dossier-node,
+    .dossier-network-board,
+    .dossier-network-tools,
+    .dossier-network-user-card,
+    .dossier-network-node,
+    .dossier-relation-notes article,
+    .community-app .editorial-card,
+    .community-app .mini-card,
+    .community-app .message-item,
+    .encounter-app .editorial-card,
+    .encounter-app .mini-card,
+    .encounter-app .message-item
+) {
+    background: transparent;
+    box-shadow: none;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    border-radius: 0;
+}
+
+:where(
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .community-app,
+    .encounter-app,
+    .dossier-app
+) :is(
+    .settings-menu-item,
+    .security-card,
+    .api-section,
+    .letter-compose-panel,
+    .letter-editorial-note,
+    .letter-template,
+    .letter-draft-card,
+    .private-thread-card,
+    .private-contact-card,
+    .private-profile-field,
+    .private-persona-card,
+    .private-moment-card,
+    .prologue-group-card,
+    .prologue-entry-card,
+    .dossier-list-card,
+    .dossier-detail-card,
+    .dossier-node,
+    .community-app .editorial-card,
+    .community-app .message-item,
+    .encounter-app .editorial-card,
+    .encounter-app .message-item
+) {
+    border-bottom: 1px solid var(--style-faint-line-color);
+}
+
+:where(
+    .settings-app,
+    .private-app,
+    .letter-app,
+    .prologue-app,
+    .dossier-app
+) :is(
+    .settings-menu-item::before,
+    .settings-menu-item::after,
+    .letter-compose-panel::before,
+    .private-thread-card::before,
+    .private-contact-card::before,
+    .private-contact-card::after,
+    .private-profile-field::before,
+    .private-persona-card::before,
+    .dossier-list-card::before,
+    .dossier-detail-card::before
+) {
+    opacity: 0.42;
+}
+
+.letter-compose-panel,
+.letter-template,
+.letter-draft-card {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.letter-template-list {
+    gap: 0;
+}
+
+.letter-template {
+    border-left: 0;
+    border-right: 0;
+    margin-right: 12px;
+}
+
+.letter-template:last-child {
+    margin-right: 0;
+}
+
+/* Private hard-coded rose-grey theme bridge. */
+.private-app,
+.private-screen,
+.private-chat-screen,
+.private-chat-screen[data-private-current-tab],
+.private-chat-screen[data-private-current-tab="contacts"],
+.private-chat-screen[data-private-current-tab="time"],
+.private-chat-screen[data-private-current-tab="monologue"],
+.private-chat-screen[data-private-current-tab="whisper"] {
+    --private-rose: var(--style-accent);
+    --private-rose-deep: var(--style-accent-strong);
+    --private-contact-ink: var(--text-main);
+    --private-contact-ink-soft: color-mix(in srgb, var(--text-main) 76%, var(--style-accent-strong));
+    --private-contact-rose: var(--style-accent);
+    --private-contact-rose-deep: var(--style-accent-strong);
+    --private-contact-muted: var(--text-sub);
+    --private-contact-line: var(--style-faint-line-color);
+    color: var(--text-main);
+    background: var(--style-app-bg);
+}
+
+.private-chat-screen::before,
+.private-chat-screen[data-private-current-tab="contacts"] .private-pane,
+.private-chat-screen[data-private-current-tab="whisper"] .private-pane,
+.private-chat-screen:not([data-private-current-tab]) .private-pane {
+    background: transparent;
+    opacity: 1;
+}
+
+.private-chat-top,
+.private-contact-titlebar,
+.private-moments-toolbar,
+.private-contact-toolbar {
+    background: transparent;
+    box-shadow: none;
+}
+
+.private-register-screen :is(.private-register-hero, .private-field),
+.private-login-screen :is(.private-login-card, .private-field),
+.private-privacy-screen .private-article,
+.private-verify-screen :is(.private-verify-copy, .private-verify-lines),
+.private-verified-screen :is(.private-verified-copy, .private-verified-panel) {
+    background: transparent;
+    box-shadow: none;
+}
+
+.private-register-screen .private-avatar-frame,
+.private-login-screen .private-avatar-frame {
+    background:
+        radial-gradient(circle at 50% 38%, rgba(var(--style-glass-tint-rgb), 0.9), rgba(var(--style-glass-tint-rgb), 0.32));
+    box-shadow: inset 0 1px 0 rgba(var(--style-glass-tint-rgb), 0.82);
+}
+
+.private-contact-filter,
+.private-message-search {
+    background: transparent;
+    border-color: var(--style-faint-line-color);
+    box-shadow: none;
+}
+
+.private-contact-filter button.active,
+.private-chat-screen[data-private-current-tab="contacts"] .private-contact-filter button.active,
+.private-tab.active {
+    border-color: color-mix(in srgb, var(--style-accent-strong) 24%, transparent);
+    background: color-mix(in srgb, var(--style-accent) 18%, transparent);
+    color: var(--text-main);
+    box-shadow: none;
+}
+
+/* Private "Me" header: avatar/name/ID are identity, not an extra container. */
+.private-profile-identity,
+.private-chat-screen[data-private-current-tab="monologue"] .private-profile-identity {
+    min-height: 76px;
+    padding: 0 76px 0 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+}
+
+.private-profile-identity::before,
+.private-profile-identity::after,
+.private-chat-screen[data-private-current-tab="monologue"] .private-profile-identity::before,
+.private-chat-screen[data-private-current-tab="monologue"] .private-profile-identity::after {
+    content: none;
+    display: none;
+}
+
+.private-profile-avatar,
+.private-chat-screen[data-private-current-tab="monologue"] .private-profile-avatar {
+    border: 0;
+    background-color: color-mix(in srgb, var(--style-accent-soft) 42%, transparent);
+    box-shadow: none;
+}
+
+.private-profile-name,
+.private-profile-mail,
+.private-profile-copy {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+/* Private final color pass: remove remaining fixed rose-grey accents. */
+#private-app.private-app,
+#private-app .private-chat-screen,
+#private-app .private-chat-screen[data-private-current-tab],
+#private-app .private-chat-screen[data-private-current-tab="contacts"],
+#private-app .private-chat-screen[data-private-current-tab="time"],
+#private-app .private-chat-screen[data-private-current-tab="monologue"],
+#private-app .private-chat-screen[data-private-current-tab="whisper"] {
+    --private-ink: var(--text-main);
+    --private-ink-soft: color-mix(in srgb, var(--text-main) 76%, var(--style-accent-strong));
+    --private-muted: var(--text-sub);
+    --private-muted-2: color-mix(in srgb, var(--text-sub) 64%, var(--style-accent-soft));
+    --private-soft: var(--style-accent-soft);
+    --private-panel: color-mix(in srgb, var(--style-page-surface) 62%, transparent);
+    --private-rose: var(--style-accent-strong);
+    --private-rose-deep: var(--style-accent-strong);
+    --private-accent: var(--style-accent);
+    --private-accent-deep: var(--style-accent-strong);
+    --private-contact-rose: var(--style-accent);
+    --private-contact-rose-deep: var(--style-accent-strong);
+    --private-contact-line: var(--style-faint-line-color);
+}
+
+#private-app :is(
+    .private-chat-kicker,
+    .private-section-label,
+    .private-card-index,
+    .private-profile-kicker,
+    .private-persona-pill,
+    .private-persona-issue,
+    .private-persona-meta b,
+    .private-moments-title span,
+    .private-settings-page-head .private-section-label,
+    .private-contact-titlebar .private-section-label
+) {
+    color: var(--style-accent-strong);
+}
+
+#private-app :is(
+    .private-profile-mail,
+    .private-profile-action-sub,
+    .private-persona-copy p,
+    .private-persona-meta em,
+    .private-contact-subtitle,
+    .private-thread-subtitle
+) {
+    color: var(--text-sub);
+}
+
+#private-app .private-profile-action::before {
+    color: var(--style-accent-strong);
+}
+
+#private-app .private-profile-action::after,
+#private-app .private-contact-card::after,
+#private-app .private-persona-card::before {
+    background: var(--style-faint-line-color);
+    color: transparent;
+}
+
+#private-app .private-profile-avatar:not(.has-image),
+#private-app .private-avatar-frame:not(.has-image) {
+    background:
+        linear-gradient(135deg, rgba(var(--style-glass-tint-rgb), 0.74), rgba(var(--style-accent-rgb), 0.16));
+}
+
+#private-app .private-profile-avatar::after,
+#private-app .private-avatar-frame::after {
+    background:
+        radial-gradient(circle at center 36%, transparent 0 18%, var(--style-accent-strong) 19% 29%, transparent 30%),
+        radial-gradient(circle at center 84%, transparent 0 23%, var(--style-accent-strong) 24% 34%, transparent 35%);
+    opacity: 0.5;
+}
+
+#private-app .private-profile-avatar.has-image::after,
+#private-app .private-avatar-frame.has-image::after {
+    display: none;
+}
+
+#private-app .private-tab.active::after {
+    background: var(--style-accent-strong);
+    box-shadow: none;
+}
+
+/* Final project-item audit pass: pages and modal options blend into their sheet. */
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    .style-menu-item,
+    .style-entry-card,
+    .style-theme-card,
+    .style-phone-card,
+    .style-control-block,
+    .style-toggle-row,
+    .style-wallpaper-chip,
+    .style-preset-chip,
+    .style-status-pill,
+    .settings-menu-item,
+    .security-card,
+    .security-field,
+    .api-section,
+    .api-field,
+    .api-preset-block,
+    .api-preset-row,
+    .api-picker-option,
+    .debug-console,
+    .debug-card,
+    .debug-output,
+    .letter-compose-panel,
+    .letter-editorial-note,
+    .letter-template-grid,
+    .letter-template,
+    .letter-history-card,
+    .letter-draft-card,
+    .letter-draft-stack,
+    .private-whisper-section,
+    .private-thread-card,
+    .private-contact-card,
+    .private-contact-titlebar,
+    .private-contact-toolbar,
+    .private-contact-account-card,
+    .private-profile-identity,
+    .private-profile-field,
+    .private-persona-card,
+    .private-profile-action,
+    .private-moment-card,
+    .private-settings-account-card,
+    .private-user-preset-field,
+    .private-contact-account-search,
+    .prologue-group-card,
+    .prologue-entry-card,
+    .prologue-control-block,
+    .prologue-field,
+    .community-app .editorial-card,
+    .community-app .mini-card,
+    .community-app .trending-item,
+    .community-app .message-item,
+    .community-app .profile-header,
+    .community-app .stat-item,
+    .community-app .grid-item,
+    .encounter-app .editorial-card,
+    .encounter-app .mini-card,
+    .encounter-app .trending-item,
+    .encounter-app .message-item,
+    .encounter-app .profile-header,
+    .encounter-app .stat-item,
+    .encounter-app .grid-item,
+    .dossier-list-card,
+    .dossier-detail-card,
+    .dossier-editor-card,
+    .dossier-field,
+    .dossier-network-preset-field,
+    .dossier-node,
+    .dossier-network-board,
+    .dossier-network-tools,
+    .dossier-network-user-card,
+    .dossier-network-node,
+    .dossier-network-subject-option,
+    .dossier-network-kind,
+    .dossier-relation-notes article
+) {
+    background: transparent;
+    box-shadow: none;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    border-radius: 0;
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    .style-menu-item,
+    .style-entry-card,
+    .style-theme-card,
+    .style-phone-card,
+    .style-control-block,
+    .style-toggle-row,
+    .settings-menu-item,
+    .security-card,
+    .api-section,
+    .api-field,
+    .api-preset-row,
+    .api-picker-option,
+    .debug-card,
+    .debug-output,
+    .letter-compose-panel,
+    .letter-editorial-note,
+    .letter-template,
+    .letter-draft-card,
+    .private-thread-card,
+    .private-contact-card,
+    .private-contact-account-card,
+    .private-profile-field,
+    .private-persona-card,
+    .private-profile-action,
+    .private-moment-card,
+    .private-settings-account-card,
+    .prologue-group-card,
+    .prologue-entry-card,
+    .dossier-list-card,
+    .dossier-detail-card,
+    .dossier-network-node,
+    .dossier-relation-notes article,
+    .community-app .editorial-card,
+    .community-app .trending-item,
+    .community-app .message-item,
+    .encounter-app .editorial-card,
+    .encounter-app .trending-item,
+    .encounter-app .message-item
+) {
+    border-bottom: 1px solid var(--style-faint-line-color);
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    .style-wallpaper-chip.active,
+    .style-preset-chip.active,
+    .api-picker-option.active,
+    .dossier-network-kind.active,
+    .dossier-network-subject-option.active
+) {
+    background: transparent;
+    box-shadow: none;
+    color: var(--style-accent-strong);
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    .style-menu-item,
+    .style-entry-card,
+    .style-theme-card,
+    .style-phone-card,
+    .style-control-block,
+    .style-toggle-row,
+    .style-wallpaper-chip,
+    .style-preset-chip,
+    .style-status-pill,
+    .settings-menu-item,
+    .security-card,
+    .security-field,
+    .api-section,
+    .api-field,
+    .api-preset-block,
+    .api-preset-row,
+    .api-picker-option,
+    .debug-console,
+    .debug-card,
+    .debug-output,
+    .letter-compose-panel,
+    .letter-editorial-note,
+    .letter-template-grid,
+    .letter-template,
+    .letter-history-card,
+    .letter-draft-card,
+    .letter-draft-stack,
+    .private-whisper-section,
+    .private-thread-card,
+    .private-contact-card,
+    .private-contact-titlebar,
+    .private-contact-toolbar,
+    .private-contact-account-card,
+    .private-profile-identity,
+    .private-profile-field,
+    .private-persona-card,
+    .private-profile-action,
+    .private-moment-card,
+    .private-settings-account-card,
+    .private-user-preset-field,
+    .private-contact-account-search,
+    .prologue-group-card,
+    .prologue-entry-card,
+    .prologue-control-block,
+    .prologue-field,
+    .community-app .editorial-card,
+    .community-app .mini-card,
+    .community-app .trending-item,
+    .community-app .message-item,
+    .community-app .profile-header,
+    .community-app .stat-item,
+    .community-app .grid-item,
+    .encounter-app .editorial-card,
+    .encounter-app .mini-card,
+    .encounter-app .trending-item,
+    .encounter-app .message-item,
+    .encounter-app .profile-header,
+    .encounter-app .stat-item,
+    .encounter-app .grid-item,
+    .dossier-list-card,
+    .dossier-detail-card,
+    .dossier-editor-card,
+    .dossier-field,
+    .dossier-network-preset-field,
+    .dossier-node,
+    .dossier-network-board,
+    .dossier-network-tools,
+    .dossier-network-user-card,
+    .dossier-network-node,
+    .dossier-network-subject-option,
+    .dossier-network-kind,
+    .dossier-relation-notes article
+)::before,
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    .style-menu-item,
+    .style-entry-card,
+    .style-theme-card,
+    .style-phone-card,
+    .style-control-block,
+    .style-toggle-row,
+    .style-wallpaper-chip,
+    .style-preset-chip,
+    .style-status-pill,
+    .settings-menu-item,
+    .security-card,
+    .security-field,
+    .api-section,
+    .api-field,
+    .api-preset-block,
+    .api-preset-row,
+    .api-picker-option,
+    .debug-console,
+    .debug-card,
+    .debug-output,
+    .letter-compose-panel,
+    .letter-editorial-note,
+    .letter-template-grid,
+    .letter-template,
+    .letter-history-card,
+    .letter-draft-card,
+    .letter-draft-stack,
+    .private-whisper-section,
+    .private-thread-card,
+    .private-contact-card,
+    .private-contact-titlebar,
+    .private-contact-toolbar,
+    .private-contact-account-card,
+    .private-profile-identity,
+    .private-profile-field,
+    .private-persona-card,
+    .private-profile-action,
+    .private-moment-card,
+    .private-settings-account-card,
+    .private-user-preset-field,
+    .private-contact-account-search,
+    .prologue-group-card,
+    .prologue-entry-card,
+    .prologue-control-block,
+    .prologue-field,
+    .community-app .editorial-card,
+    .community-app .mini-card,
+    .community-app .trending-item,
+    .community-app .message-item,
+    .community-app .profile-header,
+    .community-app .stat-item,
+    .community-app .grid-item,
+    .encounter-app .editorial-card,
+    .encounter-app .mini-card,
+    .encounter-app .trending-item,
+    .encounter-app .message-item,
+    .encounter-app .profile-header,
+    .encounter-app .stat-item,
+    .encounter-app .grid-item,
+    .dossier-list-card,
+    .dossier-detail-card,
+    .dossier-editor-card,
+    .dossier-field,
+    .dossier-network-preset-field,
+    .dossier-node,
+    .dossier-network-board,
+    .dossier-network-tools,
+    .dossier-network-user-card,
+    .dossier-network-node,
+    .dossier-network-subject-option,
+    .dossier-network-kind,
+    .dossier-relation-notes article
+)::after {
+    background: transparent;
+    background-image: none;
+    border-color: transparent;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+/* Audit pass: no filled field or title press surfaces anywhere. */
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) {
+    -webkit-tap-highlight-color: transparent;
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    input,
+    textarea,
+    select,
+    [contenteditable="true"],
+    .api-input,
+    .api-select,
+    .api-preset-name-input,
+    .security-input,
+    .private-input,
+    .style-code-editor,
+    .style-select,
+    .prologue-input,
+    .prologue-textarea,
+    .dossier-search input,
+    .private-message-search input,
+    .private-contact-account-search input
+),
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    input,
+    textarea,
+    select,
+    [contenteditable="true"],
+    .api-input,
+    .api-select,
+    .api-preset-name-input,
+    .security-input,
+    .private-input,
+    .style-code-editor,
+    .style-select,
+    .prologue-input,
+    .prologue-textarea,
+    .dossier-search input,
+    .private-message-search input,
+    .private-contact-account-search input
+):is(:focus, :focus-visible, :active) {
+    background: transparent;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    outline: none;
+}
+
+/* Final override: debug console keeps code readable after transparent theme passes. */
+#settings-app .debug-console {
+    border-color: color-mix(in srgb, var(--style-accent-strong) 34%, rgba(255, 255, 255, 0.2));
+    background:
+        linear-gradient(180deg, rgba(27, 24, 29, 0.98), rgba(18, 17, 22, 0.98));
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    border-radius: 7px;
+}
+
+#settings-app .debug-console-head {
+    color: rgba(255, 250, 252, 0.96);
+    background: rgba(255, 255, 255, 0.035);
+    border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+#settings-app .debug-console-head span {
+    color: rgba(255, 250, 252, 0.96);
+    font-weight: 700;
+}
+
+#settings-app .debug-output {
+    color: rgba(255, 250, 252, 0.95);
+    background: rgba(15, 14, 18, 0.96);
+    border-bottom: 0;
+    font-weight: 600;
+    text-shadow: none;
+}
+
+#settings-app .debug-line {
+    color: rgba(255, 250, 252, 0.95);
+}
+
+#settings-app .debug-line.error {
+    color: #ff7188;
+}
+
+#settings-app .debug-line.warn {
+    color: #ffd07a;
+}
+
+#settings-app .debug-line.ok {
+    color: #8fe6b4;
+}
+
+#settings-app .debug-output::selection {
+    color: #141117;
+    background: rgba(255, 250, 252, 0.84);
+}
+
+/* Final override: all real range inputs use theme rails and slim bar thumbs. */
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    cursor: pointer;
+    accent-color: var(--rinno-app-accent-strong, var(--style-accent-strong));
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) input[type="range"]::-webkit-slider-runnable-track {
+    height: 4px;
+    border: 0;
+    border-radius: 0;
+    background: linear-gradient(90deg, var(--rinno-app-accent, var(--style-accent)), var(--rinno-app-accent-strong, var(--style-accent-strong)));
+    box-shadow: none;
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 6px;
+    height: 18px;
+    margin-top: -7px;
+    border: 1px solid color-mix(in srgb, var(--rinno-app-accent-strong, var(--style-accent-strong)) 58%, transparent);
+    border-radius: 1px;
+    background: linear-gradient(180deg, var(--rinno-app-accent-strong, var(--style-accent-strong)), var(--rinno-app-accent, var(--style-accent)));
+    box-shadow: none;
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) input[type="range"]::-moz-range-track {
+    height: 4px;
+    border: 0;
+    border-radius: 0;
+    background: linear-gradient(90deg, var(--rinno-app-accent, var(--style-accent)), var(--rinno-app-accent-strong, var(--style-accent-strong)));
+    box-shadow: none;
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) input[type="range"]::-moz-range-progress {
+    height: 4px;
+    border-radius: 0;
+    background: linear-gradient(90deg, var(--rinno-app-accent, var(--style-accent)), var(--rinno-app-accent-strong, var(--style-accent-strong)));
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) input[type="range"]::-moz-range-thumb {
+    width: 6px;
+    height: 18px;
+    border: 1px solid color-mix(in srgb, var(--rinno-app-accent-strong, var(--style-accent-strong)) 58%, transparent);
+    border-radius: 1px;
+    background: linear-gradient(180deg, var(--rinno-app-accent-strong, var(--style-accent-strong)), var(--rinno-app-accent, var(--style-accent)));
+    box-shadow: none;
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) input[type="range"]:is(:active, :focus, :focus-visible) {
+    background: transparent;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    outline: none;
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    input,
+    textarea,
+    select
+):-webkit-autofill,
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    input,
+    textarea,
+    select
+):-webkit-autofill:hover,
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    input,
+    textarea,
+    select
+):-webkit-autofill:focus {
+    background: transparent;
+    background-color: transparent;
+    background-image: none;
+    -webkit-box-shadow: 0 0 0 1000px transparent inset;
+    box-shadow: 0 0 0 1000px transparent inset;
+    -webkit-text-fill-color: var(--text-main);
+    caret-color: var(--text-main);
+    transition: background-color 999999s ease-out, color 999999s ease-out;
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    .api-field,
+    .api-picker-control,
+    .api-picker-select,
+    .security-field,
+    .private-field,
+    .private-message-search,
+    .private-contact-account-search,
+    .private-user-preset-field,
+    .prologue-field,
+    .dossier-search,
+    .dossier-field,
+    .dossier-network-preset-field
+) {
+    background: transparent;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    [class*="title"],
+    [class*="heading"]
+):is(:active, :focus, :focus-visible),
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    [class*="card"],
+    [class*="item"],
+    [class*="row"],
+    [role="button"]
+):is(:active, :focus, :focus-visible) :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    [class*="title"],
+    [class*="heading"]
+) {
+    background: transparent;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    outline: none;
+}
+
+:is(
+    #style-app,
+    #settings-app,
+    #private-app,
+    #letter-app,
+    #prologue-app,
+    #community-app,
+    #encounter-app,
+    #dossier-app
+) :is(
+    [class*="title"],
+    [class*="heading"],
+    [role="button"],
+    .style-menu-item,
+    .settings-menu-item,
+    .community-app .trending-item,
+    .encounter-app .trending-item
+):is(:active, :focus, :focus-visible) {
+    background: transparent;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    outline: none;
+}
+
+/* Absolute last pass for settings debug contrast. */
+#settings-app.settings-app .settings-debug-view .debug-console {
+    background-color: rgba(18, 17, 22, 0.98);
+    background-image: linear-gradient(180deg, rgba(27, 24, 29, 0.98), rgba(18, 17, 22, 0.98));
+}
+
+#settings-app.settings-app .settings-debug-view .debug-output {
+    background-color: rgba(15, 14, 18, 0.96);
+    background-image: none;
+    color: rgba(255, 250, 252, 0.95);
+}
+
+/* Desktop widgets only: remove visible strokes without touching app pages or app icons. */
+.slider-container .new-info-card,
+.slider-container .info-bottom-part,
+.slider-container .chat-bubble,
+.slider-container .new-music-player,
+.slider-container .dreamy-bg,
+.slider-container .rabbit-img-box,
+.slider-container .new-sun-card,
+.slider-container .sun-avatar,
+.slider-container .sun-tag,
+.slider-container .new-dual-avatar,
+.slider-container .name-bubble,
+.slider-container .avatar-circle,
+.slider-container .chat-time-capsule,
+.slider-container .chat-bubble-capsule,
+.slider-container .chat-send-btn,
+.slider-container .chat-img-card,
+.slider-container .chat-input-bar,
+.slider-container .chat-add-btn,
+.search-pill {
+    border-color: transparent;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+    outline: 0;
+    box-shadow: 0 8px 20px rgba(var(--style-shadow-rgb), 0.045);
+    -webkit-box-shadow: 0 8px 20px rgba(var(--style-shadow-rgb), 0.045);
+}
+
+.slider-container .new-info-card::before,
+.slider-container .new-info-card::after,
+.slider-container .info-bottom-part::before,
+.slider-container .info-bottom-part::after,
+.slider-container .chat-bubble::before,
+.slider-container .chat-bubble::after,
+.slider-container .new-music-player::before,
+.slider-container .new-music-player::after,
+.slider-container .dreamy-bg::before,
+.slider-container .dreamy-bg::after,
+.slider-container .rabbit-img-box::before,
+.slider-container .rabbit-img-box::after,
+.slider-container .new-sun-card::before,
+.slider-container .new-sun-card::after,
+.slider-container .sun-avatar::before,
+.slider-container .sun-avatar::after,
+.slider-container .sun-tag::before,
+.slider-container .sun-tag::after,
+.slider-container .new-dual-avatar::before,
+.slider-container .new-dual-avatar::after,
+.slider-container .name-bubble::before,
+.slider-container .name-bubble::after,
+.slider-container .avatar-circle::before,
+.slider-container .avatar-circle::after,
+.slider-container .chat-time-capsule::before,
+.slider-container .chat-time-capsule::after,
+.slider-container .chat-bubble-capsule::before,
+.slider-container .chat-bubble-capsule::after,
+.slider-container .chat-send-btn::before,
+.slider-container .chat-send-btn::after,
+.slider-container .chat-img-card::before,
+.slider-container .chat-img-card::after,
+.slider-container .chat-input-bar::before,
+.slider-container .chat-input-bar::after,
+.slider-container .chat-add-btn::before,
+.slider-container .chat-add-btn::after,
+.search-pill::before,
+.search-pill::after {
+    border-color: transparent;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+/* First desktop profile widget: keep the glass inner stroke and a soft outer outline. */
+.slider-container .page:first-child .new-info-card {
+    border: 1px solid rgba(var(--style-glass-tint-rgb), 0.22);
+    border-top-color: rgba(var(--style-glass-tint-rgb), 0.38);
+    border-left-color: rgba(var(--style-glass-tint-rgb), 0.24);
+    box-shadow: 0 8px 22px rgba(var(--style-shadow-rgb), 0.045);
+    -webkit-box-shadow: 0 8px 22px rgba(var(--style-shadow-rgb), 0.045);
+}
+
+.slider-container .page:first-child .info-bottom-part {
+    border-top: 1px solid rgba(var(--style-glass-tint-rgb), 0.34);
+    border-left: 1px solid rgba(var(--style-glass-tint-rgb), 0.18);
+    box-shadow:
+        inset 0 1px 0 rgba(var(--style-glass-tint-rgb), 0.42),
+        inset 0 0 0 1px rgba(var(--style-glass-tint-rgb), 0.12);
+    -webkit-box-shadow:
+        inset 0 1px 0 rgba(var(--style-glass-tint-rgb), 0.42),
+        inset 0 0 0 1px rgba(var(--style-glass-tint-rgb), 0.12);
+}
+
+.slider-container .new-dual-avatar {
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.slider-container .name-bubble {
+    border-radius: 12px;
+    box-shadow:
+        0 6px 16px rgba(var(--style-shadow-rgb), 0.04),
+        inset 0 1px 1px rgba(var(--style-glass-tint-rgb), 0.42);
+    -webkit-box-shadow:
+        0 6px 16px rgba(var(--style-shadow-rgb), 0.04),
+        inset 0 1px 1px rgba(var(--style-glass-tint-rgb), 0.42);
+}
+
+.slider-container .name-bubble::after {
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-top-color: rgba(var(--style-glass-tint-rgb), 0.36);
+    filter: drop-shadow(0 3px 5px rgba(var(--style-shadow-rgb), 0.04));
+}
+
+.slider-container .avatar-circle,
+.slider-container .sun-avatar {
+    border-radius: 50%;
+    box-shadow:
+        0 7px 16px rgba(var(--style-shadow-rgb), 0.045),
+        inset 0 2px 4px rgba(var(--style-shadow-rgb), 0.035);
+    -webkit-box-shadow:
+        0 7px 16px rgba(var(--style-shadow-rgb), 0.045),
+        inset 0 2px 4px rgba(var(--style-shadow-rgb), 0.035);
+}
+
+.slider-container .page:first-child .avatar-overlap-wrapper,
+.slider-container .page:first-child .avatar-inner,
+.slider-container .rabbit-img-box {
+    border-color: transparent;
+    outline: 0;
+    overflow: hidden;
+    box-shadow:
+        0 7px 16px rgba(var(--style-shadow-rgb), 0.035),
+        inset 0 0 0 1px rgba(var(--style-glass-tint-rgb), 0.48);
+    -webkit-box-shadow:
+        0 7px 16px rgba(var(--style-shadow-rgb), 0.035),
+        inset 0 0 0 1px rgba(var(--style-glass-tint-rgb), 0.48);
+}
+
+.slider-container .page:first-child .avatar-overlap-wrapper,
+.slider-container .page:first-child .avatar-inner {
+    border-radius: 50%;
+}
+
+.slider-container .rabbit-img-box {
+    position: relative;
+    border-radius: 14px;
+}
+
+.slider-container .rabbit-img-box::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 0 0 0 1px rgba(var(--style-glass-tint-rgb), 0.62);
+    -webkit-box-shadow: inset 0 0 0 1px rgba(var(--style-glass-tint-rgb), 0.62);
+}
+
+/* Desktop widgets: lift leaf elements, not whole blocks. */
+.slider-container .new-info-card,
+.slider-container .info-bottom-part,
+.slider-container .new-music-player,
+.slider-container .dreamy-bg,
+.slider-container .new-sun-card,
+.slider-container .new-dual-avatar {
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.slider-container .page:first-child .avatar-overlap-wrapper {
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.slider-container .page:first-child .avatar-inner {
+    width: 110px;
+    height: 110px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    box-shadow: inset 0 0 0 1px rgba(var(--style-glass-tint-rgb), 0.44);
+    -webkit-box-shadow: inset 0 0 0 1px rgba(var(--style-glass-tint-rgb), 0.44);
+}
+
+.slider-container .avatar-circle {
+    width: 56px;
+    height: 56px;
+    aspect-ratio: 1 / 1;
+    flex: 0 0 56px;
+    border-radius: 999px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-color: transparent;
+    box-shadow:
+        0 7px 16px rgba(var(--style-shadow-rgb), 0.045),
+        inset 0 0 0 1px rgba(var(--style-glass-tint-rgb), 0.42);
+    -webkit-box-shadow:
+        0 7px 16px rgba(var(--style-shadow-rgb), 0.045),
+        inset 0 0 0 1px rgba(var(--style-glass-tint-rgb), 0.42);
+}
+
+.slider-container .sun-avatar {
+    width: 84px;
+    height: 84px;
+    aspect-ratio: 1 / 1;
+    flex: 0 0 84px;
+    border-radius: 999px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-color: transparent;
+}
+
+.slider-container .rabbit-img-box {
+    overflow: hidden;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-color: transparent;
+    box-shadow: 0 7px 16px rgba(var(--style-shadow-rgb), 0.032);
+    -webkit-box-shadow: 0 7px 16px rgba(var(--style-shadow-rgb), 0.032);
+}
+
+.slider-container .rabbit-img-box::after {
+    box-shadow: inset 0 0 0 2px rgba(var(--style-glass-tint-rgb), 0.78);
+    -webkit-box-shadow: inset 0 0 0 2px rgba(var(--style-glass-tint-rgb), 0.78);
+}
+
+.slider-container .page:first-child .new-info-card {
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.slider-container .avatar-circle {
+    border: 0;
+    clip-path: circle(50% at 50% 50%);
+    filter: drop-shadow(0 7px 12px rgba(var(--style-shadow-rgb), 0.04));
+    box-shadow: inset 0 0 0 1px rgba(var(--style-glass-tint-rgb), 0.42);
+    -webkit-box-shadow: inset 0 0 0 1px rgba(var(--style-glass-tint-rgb), 0.42);
+}
+
+.slider-container .sun-avatar {
+    border: 0;
+    clip-path: circle(50% at 50% 50%);
+    filter: drop-shadow(0 7px 12px rgba(var(--style-shadow-rgb), 0.04));
+}
+
+.slider-container .page:first-child .avatar-inner {
+    border: 0;
+    clip-path: circle(50% at 50% 50%);
+    filter: none;
+}
+
+.slider-container .rabbit-img-box {
+    border: 0;
+    outline: 0;
+    background-clip: border-box;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.slider-container .rabbit-img-box::before,
+.slider-container .rabbit-img-box::after {
+    content: none;
+    display: none;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+/* Desktop round avatars: no drawn ring, only a light outer lift. */
+.slider-container .page:first-child .avatar-overlap-wrapper {
+    border: 0;
+    outline: 0;
+    background: transparent;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    filter: none;
+}
+
+.slider-container .page:first-child .avatar-overlap-wrapper::before,
+.slider-container .page:first-child .avatar-overlap-wrapper::after,
+.slider-container .page:first-child .avatar-inner::before,
+.slider-container .page:first-child .avatar-inner::after,
+.slider-container .sun-avatar::before,
+.slider-container .sun-avatar::after,
+.slider-container .avatar-circle::before,
+.slider-container .avatar-circle::after {
+    content: none;
+    display: none;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.slider-container .page:first-child .avatar-inner,
+.slider-container .sun-avatar,
+.slider-container .avatar-circle {
+    border: 0;
+    outline: 0;
+    border-radius: 999px;
+    overflow: hidden;
+    clip-path: circle(50% at 50% 50%);
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    filter: drop-shadow(0 7px 12px rgba(var(--style-shadow-rgb), 0.07));
+}
+
+.slider-container .page:first-child .avatar-inner {
+    background-size: cover;
+}
+
+/* Make the selected circular avatars visibly lifted, without adding a ring. */
+.slider-container .page:first-child .avatar-overlap-wrapper {
+    overflow: visible;
+    border-radius: 999px;
+    box-shadow:
+        0 12px 22px -8px rgba(var(--style-shadow-rgb), 0.24),
+        0 4px 10px -6px rgba(var(--style-shadow-rgb), 0.18);
+    -webkit-box-shadow:
+        0 12px 22px -8px rgba(var(--style-shadow-rgb), 0.24),
+        0 4px 10px -6px rgba(var(--style-shadow-rgb), 0.18);
+}
+
+.slider-container .page:first-child .avatar-inner,
+.slider-container .sun-avatar,
+.slider-container .avatar-circle {
+    clip-path: none;
+    box-shadow:
+        0 12px 22px -8px rgba(var(--style-shadow-rgb), 0.24),
+        0 4px 10px -6px rgba(var(--style-shadow-rgb), 0.18);
+    -webkit-box-shadow:
+        0 12px 22px -8px rgba(var(--style-shadow-rgb), 0.24),
+        0 4px 10px -6px rgba(var(--style-shadow-rgb), 0.18);
+    filter: none;
+}
+
+/* Right overlay thumbnail: centered cover image, no frame or shadow. */
+.slider-container .rabbit-img-box[data-edit-id="dream_card_image"] {
+    border: 0;
+    outline: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: transparent;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    filter: none;
+}
+
+.slider-container .rabbit-img-box[data-edit-id="dream_card_image"]::before,
+.slider-container .rabbit-img-box[data-edit-id="dream_card_image"]::after {
+    content: none;
+    display: none;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    filter: none;
+}
+
+:where([data-edit-type="image"]) {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+#slider [data-edit-type="image"][data-edit-id],
+#app-root [data-edit-type="image"][data-edit-id],
+.style-cover-thumb {
+    background-color: transparent;
+}
+
+.style-cover-thumb {
+    background-color: #fff;
+    background-image: none;
+}
+
+#slider .badge-grid-widget .badge-pin-art:not(.rinno-has-custom-image),
+#slider .love-note-widget .love-note-avatar:not(.rinno-has-custom-image),
+#slider .vinyl-disc-widget .vinyl-disc-photo:not(.rinno-has-custom-image),
+#slider .capsule-list-widget .capsule-list-pill span:not(.rinno-has-custom-image),
+#slider .weather-polaroid-widget .weather-polaroid-photo:not(.rinno-has-custom-image),
+#slider .snow-heart-widget .snow-heart-photo:not(.rinno-has-custom-image),
+#slider .camera-disc-widget .camera-disc-body:not(.rinno-has-custom-image),
+#slider .camera-disc-widget .camera-disc-photo:not(.rinno-has-custom-image),
+#slider .mood-bento-widget .mood-bento-orb:not(.rinno-has-custom-image),
+#slider .profile-receipt-widget .profile-receipt-card-avatar:not(.rinno-has-custom-image),
+#slider .profile-receipt-widget .profile-receipt-avatar:not(.rinno-has-custom-image),
+#slider .moment-gallery-widget .moment-gallery-avatar:not(.rinno-has-custom-image),
+#slider .moment-gallery-widget .moment-gallery-photo:not(.rinno-has-custom-image) {
+    background: #fff;
+    background-image: none;
+}
+
+/* Header reset: keep Style top flat, while other editorial tops stay transparent. */
+.style-top {
+    background: var(--style-app-top-bg);
+    box-shadow: none;
+}
+
+.prologue-top,
+.prologue-subtop,
+.private-chat-screen[data-private-current-tab="whisper"] .private-chat-top,
+.private-chat-screen:not([data-private-current-tab]) .private-chat-top {
+    background: transparent;
+    box-shadow: none;
+}
+
+body [role="button"]:not(#rinno-button-outline-keep) {
+    outline: 0;
+}
+
+body [role="button"]:not(#rinno-button-outline-keep):active {
+    outline: 0;
+}
+
+/* Final button pass: no outer outline; pressed state is translucent gray. */
+body :is(
+    button,
+    [class*="button"],
+    [class*="-btn"],
+    .interactive-key,
+    .desktop-component-action,
+    .desktop-component-delete,
+    .segment-btn,
+    .phone-key,
+    .key
+):not(#rinno-button-outline-keep) {
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+/* Private contacts mirror the dossier preview card: title rail plus image button. */
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 144px);
+    justify-content: start;
+    justify-items: start;
+    align-items: start;
+    gap: 14px;
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 6px 0 18px;
+    counter-reset: none;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-card,
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-card:nth-child(even),
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-card:nth-child(3n) {
+    position: relative;
+    display: grid;
+    grid-template-columns: 134px;
+    grid-template-rows: 31px 95px;
+    width: 144px;
+    min-width: 144px;
+    max-width: 144px;
+    height: 136px;
+    min-height: 136px;
+    max-height: 136px;
+    aspect-ratio: auto;
+    gap: 0;
+    align-self: start;
+    padding: 5px;
+    border: 0;
+    border-bottom: 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: none;
+    overflow: hidden;
+    transform: none;
+    box-sizing: border-box;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-card:hover,
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-card:focus-visible {
+    border: 0;
+    box-shadow: 0 0 0 1px rgba(58, 49, 55, 0.04);
+    transform: none;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-card::before,
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-card::after {
+    content: none;
+    display: none;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-rail {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 4;
+    height: 31px;
+    pointer-events: none;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-title {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    top: 3px;
+    display: block;
+    height: 24px;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #211d20;
+    box-shadow: none;
+    font: 700 13px/24px var(--font-family);
+    letter-spacing: 0;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-arrow,
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-edit {
+    position: absolute;
+    top: 10px;
+    z-index: 5;
+    display: grid;
+    place-items: center;
+    width: 16px;
+    min-width: 16px;
+    max-width: 16px;
+    height: 16px;
+    min-height: 16px;
+    max-height: 16px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: rgba(33, 29, 32, 0.92);
+    box-shadow: none;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-arrow {
+    left: 10px;
+    pointer-events: auto;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-edit {
+    right: 10px;
+    pointer-events: auto;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-arrow svg,
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-edit svg {
+    display: block;
+    width: 10px;
+    min-width: 10px;
+    max-width: 10px;
+    height: 10px;
+    min-height: 10px;
+    max-height: 10px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-face,
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-face:hover,
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-face:focus-visible,
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-face:active {
+    position: static;
+    grid-row: 2;
+    grid-column: 1;
+    display: block;
+    align-self: center;
+    justify-self: center;
+    width: 134px;
+    min-width: 134px;
+    max-width: 134px;
+    height: 102px;
+    min-height: 102px;
+    max-height: 102px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    box-shadow: none;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-avatar {
+    display: grid;
+    place-items: center;
+    width: 134px;
+    min-width: 134px;
+    max-width: 134px;
+    height: 102px;
+    min-height: 102px;
+    max-height: 102px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background: rgba(247, 244, 246, 0.86);
+    color: var(--private-contact-rose-deep, #83636d);
+    box-shadow: none;
+    overflow: hidden;
+    font-size: 20px;
+    line-height: 1;
+    font-weight: 760;
+    box-sizing: border-box;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-avatar.has-image {
+    color: transparent;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-avatar img {
+    display: block;
+    width: 134px;
+    min-width: 134px;
+    max-width: 134px;
+    height: 102px;
+    min-height: 102px;
+    max-height: 102px;
+    object-fit: cover;
+    object-position: center center;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-copy,
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-sub,
+#private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-note {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.private-contact-profile-modal.dossier-profile-modal {
+    z-index: 1850;
+}
+
+.private-contact-profile-modal .dossier-profile-dialog {
+    width: min(92vw, 420px);
+}
+
+.private-contact-homepage-paper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: 0 22px 64px rgba(34, 29, 33, 0.14);
+}
+
+.private-contact-homepage-cover {
+    position: relative;
+    flex: 0 0 174px;
+    min-height: 174px;
+    background:
+        linear-gradient(180deg, rgba(20, 20, 20, 0.06), rgba(255, 255, 255, 0.72)),
+        repeating-linear-gradient(90deg, rgba(55, 55, 58, 0.18) 0 1px, transparent 1px 82px),
+        repeating-linear-gradient(0deg, rgba(55, 55, 58, 0.1) 0 1px, transparent 1px 64px),
+        #dfe0e1;
+    background-size: cover;
+    background-position: center center;
+    overflow: visible;
+}
+
+.private-contact-homepage-close {
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.72);
+    color: #211d20;
+    box-shadow: none;
+}
+
+.private-contact-homepage-close svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.private-contact-homepage-head {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+    padding: 0 24px 22px;
+    margin-top: -58px;
+    text-align: center;
+    z-index: 2;
+}
+
+.private-contact-homepage-avatar {
+    width: 104px;
+    height: 104px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 28px;
+    overflow: hidden;
+    background: rgba(247, 244, 246, 0.98);
+    color: #333;
+    font-size: 28px;
+    font-weight: 760;
+    box-shadow: 0 10px 28px rgba(34, 29, 33, 0.08);
+}
+
+.private-contact-homepage-avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.private-contact-homepage-head h2 {
+    margin: 0;
+    color: #373238;
+    font-size: 20px;
+    line-height: 1.15;
+    font-weight: 520;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
+}
+
+.private-contact-homepage-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: end;
+    width: min(100%, 260px);
+    margin: 0 auto 26px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.private-contact-homepage-tabs button {
+    position: relative;
+    min-width: 0;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #514b52;
+    box-shadow: none;
+    font-size: 12px;
+    line-height: 30px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.private-contact-homepage-tabs button.active::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 34px;
+    height: 1px;
+    background: #2f2b30;
+    transform: translateX(-50%);
+}
+
+.private-contact-homepage-flow {
+    width: min(100%, 282px);
+    margin: 0 auto;
+    padding: 0 0 34px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.private-contact-homepage-flow p {
+    margin: 0;
+    color: #333038;
+    font-size: 13px;
+    line-height: 2.05;
+    font-weight: 430;
+    text-align: center;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.private-contact-homepage-notes {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    color: #111;
+    font-size: 26px;
+    line-height: 1;
+}
+
+.private-contact-homepage-notes span {
+    position: absolute;
+}
+
+.private-contact-homepage-notes span:nth-child(1) { left: 20px; top: 28px; font-size: 34px; }
+.private-contact-homepage-notes span:nth-child(2) { right: 98px; top: 42px; }
+.private-contact-homepage-notes span:nth-child(3) { left: 68px; top: 82px; }
+.private-contact-homepage-notes span:nth-child(4) { right: 58px; top: 70px; }
+
+.private-contact-homepage-toast {
+    position: absolute;
+    left: calc(50% + 38px);
+    top: 54px;
+    padding: 8px 11px;
+    border-radius: 5px;
+    background: rgba(19, 19, 21, 0.92);
+    color: #fff;
+    font-size: 11px;
+    line-height: 1;
+    white-space: nowrap;
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+}
+
+.private-contact-homepage-links {
+    width: min(100%, 314px);
+    margin: auto auto 26px;
+    padding: 10px 0 0;
+    display: grid;
+    gap: 2px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.private-contact-homepage-links button {
+    min-height: 44px;
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) 18px;
+    align-items: center;
+    gap: 10px;
+    padding: 0 2px;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(48, 43, 50, 0.05);
+    background: transparent;
+    color: #3a343b;
+    box-shadow: none;
+    text-align: left;
+}
+
+.private-contact-homepage-links span {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border: 1px solid rgba(48, 43, 50, 0.08);
+    border-radius: 3px;
+    font-size: 10px;
+    color: #343039;
+}
+
+.private-contact-homepage-links b {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 420;
+}
+
+.private-contact-homepage-links i {
+    font-style: normal;
+    text-align: right;
+    color: rgba(48, 43, 50, 0.55);
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contact-homepage"] {
+    background: #fff;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contact-homepage"] .private-chat-shell {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contact-homepage"] .private-chat-top,
+#private-app .private-chat-screen[data-private-current-tab="contact-homepage"] .private-tabbar {
+    display: none;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contact-homepage"] .private-panel-wrap {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contact-homepage"] .private-pane {
+    display: none;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contact-homepage"] .private-contact-homepage-pane.active {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    overflow-y: auto;
+    background: #fff;
+}
+
+#private-app .private-contact-homepage-pane .private-contact-homepage-paper {
+    width: 100%;
+    max-width: 390px;
+    min-height: 100%;
+    height: auto;
+    margin: 0 auto;
+    overflow: visible;
+    box-shadow: none;
+}
+
+/* Contact homepage: full-bleed role page, round avatar, editable gradient cover. */
+#private-app .private-chat-screen[data-private-current-tab="contact-homepage"],
+#private-app .private-chat-screen[data-private-current-tab="contact-homepage"] .private-contact-homepage-pane.active {
+    background: #fffdfd;
+}
+
+#private-app .private-chat-screen[data-private-current-tab="contact-homepage"] .private-contact-homepage-pane.active {
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+}
+
+#private-app .private-contact-homepage-pane .private-contact-homepage-paper {
+    width: 100%;
+    max-width: none;
+    min-height: 100%;
+    height: auto;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: visible;
+    background:
+        linear-gradient(180deg, rgba(255, 253, 254, 0.98), rgba(246, 241, 244, 0.82) 56%, #fffdfd 100%);
+    box-shadow: none;
+}
+
+.private-contact-homepage-cover {
+    position: relative;
+    width: 100%;
+    flex: 0 0 clamp(224px, 34dvh, 318px);
+    min-height: clamp(224px, 34dvh, 318px);
+    cursor: pointer;
+    background:
+        radial-gradient(ellipse 86% 78% at 18% 10%, rgba(var(--style-accent-rgb, 217, 183, 192), 0.54) 0 36%, transparent 74%),
+        radial-gradient(ellipse 72% 64% at 88% 16%, rgba(var(--style-accent-soft-rgb, 246, 238, 241), 0.84) 0 42%, transparent 78%),
+        linear-gradient(135deg, #f8f3f6 0%, #d8e3df 54%, #b98998 100%);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    overflow: visible;
+}
+
+.private-contact-homepage-cover.has-custom-cover {
+    background:
+        linear-gradient(180deg, rgba(20, 18, 22, 0.06), rgba(20, 18, 22, 0.18)),
+        var(--private-contact-homepage-cover-image) center center / cover no-repeat,
+        linear-gradient(135deg, #f8f3f6 0%, #d8e3df 54%, #b98998 100%);
+}
+
+.private-contact-homepage-cover:focus-visible {
+    outline: 2px solid rgba(33, 28, 32, 0.34);
+    outline-offset: -4px;
+}
+
+.private-contact-homepage-notes,
+.private-contact-homepage-toast {
+    display: none;
+}
+
+.private-contact-homepage-close {
+    left: max(16px, env(safe-area-inset-left, 0px));
+    top: calc(16px + env(safe-area-inset-top, 0px));
+    z-index: 4;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 253, 254, 0.76);
+    color: #211c20;
+    backdrop-filter: blur(16px) saturate(130%);
+    -webkit-backdrop-filter: blur(16px) saturate(130%);
+}
+
+.private-contact-homepage-head {
+    width: min(100%, 760px);
+    margin: -58px auto 0;
+    padding: 0 24px 20px;
+    gap: 12px;
+}
+
+.private-contact-homepage-avatar {
+    width: 108px;
+    height: 108px;
+    border: 4px solid rgba(255, 253, 254, 0.94);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 50% 35%, rgba(33, 28, 32, 0.22) 0 19%, transparent 20%),
+        radial-gradient(circle at 50% 102%, rgba(33, 28, 32, 0.18) 0 33%, transparent 34%),
+        rgba(255, 253, 254, 0.92);
+    color: #2a2428;
+    box-shadow: 0 16px 34px rgba(55, 38, 47, 0.14);
+}
+
+.private-contact-homepage-avatar img {
+    border-radius: 50%;
+}
+
+.private-contact-homepage-head h2 {
+    color: #211c20;
+    font-size: clamp(20px, 3.4vw, 28px);
+    line-height: 1.12;
+}
+
+.private-contact-homepage-tabs {
+    width: min(100%, 430px);
+    margin: 0 auto 22px;
+    padding: 0 24px;
+}
+
+.private-contact-homepage-flow {
+    width: min(100%, 680px);
+    flex: 0 0 auto;
+    margin: 0 auto;
+    padding: 0 28px 28px;
+    gap: 18px;
+}
+
+.private-contact-homepage-flow p {
+    text-align: left;
+    line-height: 1.86;
+}
+
+.private-contact-homepage-links {
+    width: min(100%, 680px);
+    margin: 0 auto calc(34px + var(--rinno-safe-area-bottom, 0px));
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.private-contact-homepage-links button {
+    min-width: 0;
+    min-height: 84px;
+    padding: 14px 10px;
+    display: grid;
+    place-items: center;
+    gap: 8px;
+    border: 1px solid rgba(73, 55, 63, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 253, 254, 0.72);
+    color: #211c20;
+    box-shadow: 0 10px 24px rgba(55, 38, 47, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.78);
+    text-align: center;
+}
+
+.private-contact-homepage-links span {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 50%;
+    background:
+        linear-gradient(135deg, #211c20, rgba(33, 28, 32, 0.84));
+    color: #fffdfd;
+    font-size: 14px;
+}
+
+.private-contact-homepage-links b {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #211c20;
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 500;
+}
+
+.private-contact-homepage-links i {
+    color: rgba(48, 43, 50, 0.55);
+    font-style: normal;
+}
+
+@media (max-width: 430px) {
+    .private-contact-homepage-cover {
+        flex-basis: 228px;
+        min-height: 228px;
+    }
+
+    .private-contact-homepage-head,
+    .private-contact-homepage-flow {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .private-contact-homepage-links {
+        padding-left: 14px;
+        padding-right: 14px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+}
+
+@media (max-width: 460px) {
+    #private-app .private-chat-screen[data-private-current-tab="contacts"] .private-contact-list {
+        grid-template-columns: repeat(auto-fill, 144px);
+        gap: 12px;
+    }
+}
+
+/* Dossier contact preview must stay after bridge resets. */
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-list,
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 144px);
+    justify-content: start;
+    justify-items: start;
+    align-items: start;
+    gap: 14px;
+}
+
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-list-card.dossier-storage-card,
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-list-card.dossier-storage-card,
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-list-card.dossier-storage-card:nth-child(even),
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-list-card.dossier-storage-card:nth-child(even),
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-list-card.dossier-storage-card:nth-child(3n),
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-list-card.dossier-storage-card:nth-child(3n),
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-list-card.dossier-storage-card.active,
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-list-card.dossier-storage-card.active {
+    position: relative;
+    display: grid;
+    grid-template-columns: 134px;
+    grid-template-rows: 31px 95px;
+    width: 144px;
+    min-width: 144px;
+    max-width: 144px;
+    height: 136px;
+    min-height: 136px;
+    max-height: 136px;
+    aspect-ratio: auto;
+    gap: 0;
+    padding: 5px;
+    border: 0;
+    border-bottom: 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: none;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-list-card.dossier-storage-card::before,
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-list-card.dossier-storage-card::before {
+    content: attr(data-dossier-storage-title);
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    top: 3px;
+    z-index: 3;
+    display: block;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #211d20;
+    box-shadow: none;
+    font: 700 13px/24px var(--font-family);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 1;
+    pointer-events: none;
+}
+
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-list-card.dossier-storage-card::after,
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-list-card.dossier-storage-card::after {
+    content: none;
+    display: none;
+}
+
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-card-arrow,
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-card-arrow {
+    position: absolute;
+    top: 10px;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    width: 16px;
+    min-width: 16px;
+    max-width: 16px;
+    height: 16px;
+    min-height: 16px;
+    max-height: 16px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: rgba(33, 29, 32, 0.92);
+    box-shadow: none;
+}
+
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-card-arrow-left,
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-card-arrow-left {
+    left: 10px;
+}
+
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-card-arrow-right,
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-card-arrow-right {
+    right: 10px;
+}
+
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-card-arrow svg,
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-card-arrow svg {
+    display: block;
+    width: 10px;
+    height: 10px;
+    stroke-width: 2.6;
+}
+
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-storage-face,
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-storage-face,
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-storage-face.interactive,
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-storage-face.interactive {
+    position: static;
+    grid-column: 1;
+    grid-row: 2;
+    display: block;
+    width: 134px;
+    min-width: 134px;
+    max-width: 134px;
+    height: 95px;
+    min-height: 95px;
+    max-height: 95px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    box-shadow: none;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-storage-avatar,
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-storage-avatar {
+    display: block;
+    width: 134px;
+    min-width: 134px;
+    max-width: 134px;
+    height: 95px;
+    min-height: 95px;
+    max-height: 95px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background: rgba(247, 244, 246, 0.86);
+    box-shadow: none;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#dossier-app .dossier-view[data-dossier-view="char"] .dossier-storage-avatar img,
+#dossier-app .dossier-view[data-dossier-view="npc"] .dossier-storage-avatar img {
+    display: block;
+    width: 134px;
+    min-width: 134px;
+    max-width: 134px;
+    height: 95px;
+    min-height: 95px;
+    max-height: 95px;
+    object-fit: cover;
+    object-position: center center;
+}
+
+@media (max-width: 460px) {
+    #dossier-app .dossier-view[data-dossier-view="char"] .dossier-list,
+    #dossier-app .dossier-view[data-dossier-view="npc"] .dossier-list {
+        grid-template-columns: repeat(auto-fill, 144px);
+        gap: 12px;
+    }
+}
+
+body :is(
+    button,
+    [class*="button"],
+    [class*="-btn"],
+    .interactive-key,
+    .desktop-component-action,
+    .desktop-component-delete,
+    .segment-btn,
+    .phone-key,
+    .key
+):not(#rinno-button-outline-keep):focus,
+body :is(
+    button,
+    [class*="button"],
+    [class*="-btn"],
+    .interactive-key,
+    .desktop-component-action,
+    .desktop-component-delete,
+    .segment-btn,
+    .phone-key,
+    .key
+):not(#rinno-button-outline-keep):focus-visible {
+    outline: 0;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+body :is(
+    button,
+    [class*="button"],
+    [class*="-btn"],
+    .interactive-key,
+    .desktop-component-action,
+    .desktop-component-delete,
+    .segment-btn,
+    .phone-key,
+    .key
+):not(#rinno-button-outline-keep):active {
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+/* 2026-04-24 dual-avatar bubbles: keep the glass body and remove the add-on tail. */
+.slider-container .name-bubble {
+    overflow: hidden;
+    backdrop-filter: blur(25px) saturate(140%);
+    -webkit-backdrop-filter: blur(25px) saturate(140%);
+}
+
+.slider-container .name-bubble::after {
+    content: none;
+    display: none;
+    border: 0;
+    filter: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    pointer-events: none;
+}
+
+/* 2026-04-24: restore the first homepage profile card to the base component styling. */
+.slider-container .page:first-child .new-info-card {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
+    backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
+    border: var(--glass-border);
+    border-top: 1px solid rgba(255, 255, 255, 0.38);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
+    -webkit-box-shadow: var(--glass-shadow);
+}
+
+.slider-container .page:first-child .info-header-bg {
+    width: 100%;
+    height: 185px;
+    position: relative;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 calc(100% - 20px), rgba(0, 0, 0, 0.58) calc(100% - 10px), rgba(0, 0, 0, 0.18) calc(100% - 4px), transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 calc(100% - 20px), rgba(0, 0, 0, 0.58) calc(100% - 10px), rgba(0, 0, 0, 0.18) calc(100% - 4px), transparent 100%);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.slider-container .page:first-child .info-header-bg::after {
+    content: none;
+    display: none;
+}
+
+.slider-container .page:first-child .info-bottom-part {
+    width: 100%;
+    min-height: 175px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 24px;
+    margin-top: -28px;
+    border-top: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 28px 28px 0 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.04) 58%, rgba(255, 255, 255, 0.015));
+    -webkit-backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
+    backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
+    box-shadow: 0 -4px 14px rgba(255, 255, 255, 0.08), var(--glass-shadow);
+    -webkit-box-shadow: 0 -4px 14px rgba(255, 255, 255, 0.08), var(--glass-shadow);
+}
+
+.slider-container .page:first-child .info-bottom-part::before {
+    content: none;
+    display: none;
+}
+
+.slider-container .page:first-child .info-bottom-part > * {
+    position: relative;
+    z-index: 2;
+}
+
+.slider-container .page:first-child .avatar-overlap-wrapper {
+    margin-top: -55px;
+    z-index: 2;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    border-radius: 50%;
+    background: transparent;
+    overflow: visible;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    -webkit-box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    filter: none;
+}
+
+.slider-container .page:first-child .avatar-overlap-wrapper::before,
+.slider-container .page:first-child .avatar-overlap-wrapper::after,
+.slider-container .page:first-child .avatar-inner::before,
+.slider-container .page:first-child .avatar-inner::after {
+    content: none;
+    display: none;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.slider-container .page:first-child .avatar-inner {
+    width: 110px;
+    height: 110px;
+    aspect-ratio: 1 / 1;
+    border: none;
+    outline: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    clip-path: none;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    filter: none;
+}
+
+/* 2026-04-24 desktop chat/avatar surface reset: plain white capsules, no glass. */
+.slider-container .chat-bubble,
+.slider-container .chat-time-capsule,
+.slider-container .chat-bubble-capsule,
+.slider-container .chat-input-bar,
+.slider-container .chat-send-btn,
+.slider-container .name-bubble,
+.slider-container .new-sun-card .sun-tag {
+    background: #ffffff;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+.slider-container .chat-bubble,
+.slider-container .chat-time-capsule,
+.slider-container .chat-bubble-capsule,
+.slider-container .chat-input-bar,
+.slider-container .name-bubble,
+.slider-container .new-sun-card .sun-tag {
+    border-radius: 999px;
+}
+
+.slider-container .chat-img-card {
+    width: 100px;
+    height: 100px;
+    border: 0;
+    outline: 0;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    overflow: hidden;
+}
+
+.slider-container .name-bubble {
+    color: var(--text-main);
+    -webkit-text-stroke: 0 transparent;
+}
+
+.slider-container .name-bubble::before,
+.slider-container .name-bubble::after,
+.slider-container .new-sun-card .sun-tag::before,
+.slider-container .new-sun-card .sun-tag::after,
+.slider-container .chat-bubble::before,
+.slider-container .chat-bubble::after,
+.slider-container .chat-time-capsule::before,
+.slider-container .chat-time-capsule::after,
+.slider-container .chat-bubble-capsule::before,
+.slider-container .chat-bubble-capsule::after,
+.slider-container .chat-input-bar::before,
+.slider-container .chat-input-bar::after,
+.slider-container .chat-img-card::before,
+.slider-container .chat-img-card::after {
+    content: none;
+    display: none;
+    border: 0;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    filter: none;
+}

@@ -1,32 +1,61 @@
-/* ================= 基础规范与 CSS 变量 ================= */
+/* ================= CSS Variables & Safe-Area Tokens ================= */
+/*
+ * Root CSS map:
+ * 1. viewport / safe-area tokens
+ * 2. html/body shell and phone root
+ * 3. top chrome, dock, pagination, desktop shell
+ * 4. desktop cards, grids, app surfaces
+ * 5. theme + repair passes
+ * 6. mobile and safe-area correction passes
+ */
 :root {
     --app-height: 100vh;
-    --page-bg: #ecebee; 
-    /* 【修改】更清透的玻璃渐变底色，极低的透明度 */
+    --app-width: 100vw;
+    --page-bg: #f3eff0;
+    --rinno-paper: #fffaf8;
+    --rinno-paper-warm: #fbf4f1;
+    --rinno-editorial-line: rgba(100, 69, 79, 0.105);
+    --rinno-editorial-line-soft: rgba(100, 69, 79, 0.065);
+    --rinno-editorial-shadow: 0 18px 44px rgba(80, 54, 64, 0.055);
+    --rinno-editorial-shadow-soft: 0 8px 24px rgba(80, 54, 64, 0.038);
+    --rinno-editorial-serif: "Times New Roman", "Songti SC", Georgia, serif;
+    --rinno-editorial-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    --rinno-editorial-letterspace: 0.075em;
     --glass-bg: var(--rinno-component-surface);
-    /* 【修改】更轻的描边，避免玻璃边缘发灰 */
     --glass-border: var(--rinno-component-border);
-    /* 【修改】更薄的弥散阴影与内高光 */
     --glass-shadow: var(--rinno-component-shadow);
-    
-    --text-main: #2b2b30;
-    --text-sub: #7a7a85;
-    --font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    --text-main: #2d272b;
+    --text-sub: #86777d;
+    --font-family: var(--rinno-editorial-sans);
     --style-global-font-family: var(--font-family);
     --style-font-size-px: 16px;
-    /* 【修改】提升模糊度与饱和度，实现高级磨砂质感 */
     --blur-val: 0px;
     --saturate-val: 100%;
-    --radius-lg: 28px;
-    --radius-md: 20px;
-    --radius-sm: 14px;
+    --radius-lg: 30px;
+    --radius-md: 22px;
+    --radius-sm: 16px;
     --style-ui-scale: 1;
     --style-ui-scale-effective: var(--style-ui-scale);
     --desktop-layout-base-width: 450px;
     --desktop-layout-max-width: calc(var(--desktop-layout-base-width) * var(--style-ui-scale-effective));
-    --desktop-layout-side-gutter: max(32px, calc((100vw - var(--desktop-layout-max-width)) / 2));
+    --desktop-layout-side-gutter: max(32px, calc((var(--app-width) - var(--desktop-layout-max-width)) / 2));
     --desktop-component-max-width: var(--desktop-layout-max-width);
+    --rinno-safe-area-top: env(safe-area-inset-top, 0px);
+    --rinno-safe-area-right: env(safe-area-inset-right, 0px);
+    --rinno-safe-area-bottom-css: env(safe-area-inset-bottom, 0px);
+    --rinno-safe-area-bottom: min(var(--rinno-safe-area-bottom-css), 34px);
+    --rinno-safe-area-left: env(safe-area-inset-left, 0px);
+    --rinno-top-chrome-height: 48px;
+    --rinno-top-chrome-clearance: var(--rinno-top-chrome-height);
+    --rinno-bottom-clearance-tight: max(28px, calc(var(--rinno-safe-area-bottom) + 16px));
+    --rinno-bottom-clearance: max(38px, calc(var(--rinno-safe-area-bottom) + 22px));
+    --rinno-bottom-clearance-loose: max(46px, calc(var(--rinno-safe-area-bottom) + 30px));
+    --rinno-modal-bottom-pad: max(38px, calc(var(--rinno-safe-area-bottom) + 24px));
+    --rinno-visual-viewport-top: 0px;
+    --rinno-app-shell-height: var(--app-height);
 }
+
+
 
 @font-face {
     font-family: "Petit Formal Script";
@@ -48,31 +77,47 @@
 }
 
 @supports (height: 100dvh) {
-    :root { --app-height: 100dvh; }
+    @supports not (-webkit-touch-callout: none) {
+        :root { --app-height: 100dvh; }
+    }
 }
 
 html {
-    width: 100%;
-    height: var(--app-height);
-    max-height: var(--app-height);
+    width: var(--app-width, 100vw);
+    height: var(--app-height, 100vh);
+    min-height: var(--app-height, 100vh);
     overflow: hidden;
-    overscroll-behavior: none;
-    touch-action: manipulation;
-}
-
-body { 
-    position: fixed;
-    inset: 0;
-    width: 100%; height: var(--app-height); max-height: var(--app-height); overflow: hidden;
+    overflow-x: hidden;
     overscroll-behavior: none;
     touch-action: manipulation;
     background: var(--page-bg);
-    font-family: var(--style-global-font-family, var(--font-family)); color: var(--text-main); font-weight: normal; 
 }
+
+body {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: auto;
+    bottom: auto;
+    width: var(--app-width, 100vw);
+    height: var(--app-height, 100vh);
+    min-height: var(--app-height, 100vh);
+    overflow: hidden;
+    overflow-x: hidden;
+    overscroll-behavior: none;
+    touch-action: manipulation;
+    background:
+        radial-gradient(ellipse 86% 64% at 14% -8%, rgba(var(--style-accent-soft-rgb, 246, 238, 241), 0.72), transparent 70%),
+        radial-gradient(ellipse 72% 58% at 92% 6%, rgba(var(--style-accent-rgb, 217, 183, 192), 0.22), transparent 66%),
+        linear-gradient(180deg, var(--rinno-paper, #fffaf8) 0%, var(--page-bg) 54%, var(--rinno-paper-warm, #fbf4f1) 100%);
+    font-family: var(--style-global-font-family, var(--font-family)); color: var(--text-main); font-weight: normal;
+    transform: translateZ(0);
+}
+
 
 .phone-ui-root {
     position: fixed;
-    top: 0;
+    top: var(--rinno-visual-viewport-top, 0px);
     left: 50%;
     width: calc(100% / var(--style-ui-scale, 1));
     height: calc(var(--app-height) / var(--style-ui-scale, 1));
@@ -88,11 +133,11 @@ body::before, body::after {
     display: none;
 }
 body::before {
-    width: 55vw; height: 55vw; background: #dfd8e8; 
+    width: 55vw; height: 55vw; background: #dfd8e8;
     top: -10vw; left: -10vw;
 }
 body::after {
-    width: 65vw; height: 65vw; background: #e8e2d7; 
+    width: 65vw; height: 65vw; background: #e8e2d7;
     bottom: -15vw; right: -15vw;
 }
 
@@ -109,14 +154,14 @@ body::after {
 
     body::before,
     body::after {
-        display: none !important;
-        filter: none !important;
+        display: none;
+        filter: none;
     }
 }
 
 ::-webkit-scrollbar { display: none; }
 
-/* ================= 顶层组件 ================= */
+/* ================= Top Chrome ================= */
 .status-bar {
     position: fixed; top: 0; left: 0; right: 0; height: 48px; display: flex;
     justify-content: space-between; align-items: center; padding: 0 24px; z-index: 1600;
@@ -144,13 +189,8 @@ body::after {
     height: 32px;
     background-color: #000;
     border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.1), inset 0 0 2px rgba(255,255,255,0.1);
     z-index: 1000;
-    pointer-events: none;
 }
 .dynamic-island .sensor {
     width: 10px;
@@ -167,7 +207,185 @@ body::after {
     box-shadow: inset -1px -1px 2px rgba(255,255,255,0.1);
 }
 
-/* Home 条 */
+/* --- Dynamic Island: internal layout --- */
+.dynamic-island {
+    cursor: pointer;
+    pointer-events: auto;
+    transition: width 0.4s cubic-bezier(.4,0,.2,1), height 0.4s cubic-bezier(.4,0,.2,1), border-radius 0.4s cubic-bezier(.4,0,.2,1), top 0.35s cubic-bezier(.4,0,.2,1);
+    overflow: hidden;
+}
+.island-default {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; height: 100%;
+    padding: 0 10px;
+    transition: opacity 0.25s;
+}
+.island-status-hint {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 12px; font-weight: 500; letter-spacing: 0.5px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+}
+.dynamic-island.island-expanded .island-default { opacity: 0; }
+.dynamic-island.island-expanded .island-status-hint { opacity: 1; }
+.dynamic-island.island-expanded {
+    width: 200px; height: 36px; border-radius: 18px;
+}
+
+/* --- Focus Mode Panel --- */
+.focus-overlay {
+    position: fixed; inset: 0; z-index: 1580;
+    background: rgba(0,0,0,0.35);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s ease;
+}
+.focus-overlay.visible {
+    opacity: 1; pointer-events: auto;
+}
+.focus-panel {
+    position: fixed;
+    top: 56px;
+    left: 50%; transform: translateX(-50%) scale(0.92);
+    width: min(340px, 88vw);
+    z-index: 1590;
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 0;
+    opacity: 0; pointer-events: none;
+    transform-origin: top center;
+    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(.4,0,.2,1);
+}
+.focus-panel.visible {
+    opacity: 1; pointer-events: auto;
+    transform: translateX(-50%) scale(1);
+}
+
+/* Focus item row */
+.focus-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 18px;
+    background: rgba(44,44,46,0.92);
+    border-radius: 16px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    user-select: none;
+    -webkit-user-select: none;
+    position: relative;
+}
+.focus-item:active {
+    transform: scale(0.97);
+    background: rgba(58,58,60,0.95);
+}
+.focus-item.active {
+    background: rgba(58,58,60,0.98);
+    box-shadow: 0 0 0 1.5px rgba(255,255,255,0.18);
+}
+
+.focus-item-icon {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    color: #fff;
+}
+.focus-item-body {
+    flex: 1; min-width: 0;
+}
+.focus-item-name {
+    font-size: 15px; font-weight: 600; line-height: 1.3;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.focus-item-desc {
+    font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.3; margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.focus-item-more {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.4); font-size: 16px; font-weight: 700;
+    letter-spacing: 2px; cursor: pointer; flex-shrink: 0;
+    border-radius: 50%;
+    transition: background 0.15s;
+}
+.focus-item-more:active {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Focus add button */
+.focus-add {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 18px 0 8px;
+    color: rgba(255,255,255,0.55);
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: color 0.2s;
+}
+.focus-add:active { color: rgba(255,255,255,0.8); }
+.focus-add-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 300; color: rgba(255,255,255,0.6);
+    transition: background 0.2s;
+}
+.focus-add:active .focus-add-icon {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Focus add dialog */
+.focus-add-dialog {
+    position: fixed;
+    top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.92);
+    width: min(300px, 82vw);
+    background: rgba(44,44,46,0.96);
+    border-radius: 16px;
+    padding: 24px 20px 18px;
+    z-index: 1600;
+    display: flex; flex-direction: column; gap: 16px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s, transform 0.3s cubic-bezier(.4,0,.2,1);
+}
+.focus-add-dialog.visible {
+    opacity: 1; pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+}
+.focus-add-dialog h3 {
+    margin: 0; color: #fff; font-size: 16px; font-weight: 600; text-align: center;
+}
+.focus-add-dialog input {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: #fff; font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.focus-add-dialog input::placeholder { color: rgba(255,255,255,0.3); }
+.focus-add-dialog input:focus { border-color: rgba(255,255,255,0.3); }
+.focus-add-dialog-btns {
+    display: flex; gap: 10px;
+}
+.focus-add-dialog-btns button {
+    flex: 1; padding: 10px 0;
+    border: none; border-radius: 10px;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: opacity 0.15s;
+}
+.focus-add-dialog-btns button:active { opacity: 0.7; }
+.focus-add-dialog-btns .focus-btn-cancel {
+    background: rgba(255,255,255,0.1); color: #fff;
+}
+.focus-add-dialog-btns .focus-btn-confirm {
+    background: #0a84ff; color: #fff;
+}
+
+/* Home 鏉?*/
 .home-indicator {
     position: fixed;
     bottom: 6px;
@@ -185,19 +403,18 @@ body::after {
 }
 
 .search-pill {
-    position: fixed; bottom: 135px; left: 50%; transform: translateX(-50%);
-    /* 【修改】胶囊清透感 */
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.035)); 
-    -webkit-backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
-    backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val)); 
-    border: 1px solid rgba(255, 255, 255, 0.12); border-top: 1px solid rgba(255,255,255,0.36);
-    box-shadow: 0 8px 22px rgba(0,0,0,0.035), inset 0 1px 0 rgba(255,255,255,0.42);
-    padding: 4px 12px; border-radius: 12px; z-index: 950;
-    display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-sub);
-    cursor: pointer; transition: transform 0.2s;
+    position: fixed; bottom: 136px; left: 50%; transform: translateX(-50%);
+    background: var(--rinno-component-surface-soft);
+    border: var(--rinno-component-border);
+    border-top: var(--rinno-component-highlight);
+    box-shadow: var(--rinno-component-shadow-soft);
+    padding: 5px 14px; border-radius: 999px; z-index: 950;
+    display: flex; align-items: center; gap: 6px; font-size: 10px; line-height: 1;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-sub);
+    cursor: pointer; transition: transform 0.2s ease, opacity 0.2s ease;
 }
-.search-pill:active { transform: translateX(-50%) scale(0.95); }
-.search-pill svg { width: 12px; height: 12px; stroke: #666; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round;}
+.search-pill:active { opacity: 0.88; }
+.search-pill svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round;}
 
 .desktop-component-scrim {
     position: fixed;
@@ -215,7 +432,7 @@ body::after {
     right: 0;
     bottom: 0;
     z-index: 970;
-    padding: 0 12px calc(10px + env(safe-area-inset-bottom));
+    padding: 0 12px calc(10px + var(--rinno-safe-area-bottom, 0px));
     transform: translateY(calc(100% + 24px));
     opacity: 0;
     pointer-events: none;
@@ -223,20 +440,19 @@ body::after {
 }
 
 .desktop-component-panel {
-    width: min(100%, var(--desktop-component-max-width));
+    width: min(calc(100vw - 28px), var(--desktop-component-max-width));
+    max-width: var(--desktop-component-max-width);
     max-height: min(72vh, 560px);
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    border-radius: 24px 24px 18px 18px;
-    border: 1px solid rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.10);
-    border-top: 1px solid rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.34);
-    border-left: 1px solid rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.18);
-    background: linear-gradient(135deg, rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.16), rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.035) 56%, rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.012));
-    box-shadow: 0 -10px 32px rgba(var(--style-shadow-rgb, 88, 55, 68), 0.052), inset 0 1px 0 rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.36);
-    -webkit-backdrop-filter: blur(52px) saturate(180%);
-    backdrop-filter: blur(52px) saturate(180%);
+    isolation: isolate;
+    border-radius: 30px 30px 24px 24px;
+    border: var(--rinno-component-border);
+    border-top: var(--rinno-component-highlight);
+    background: var(--rinno-component-surface);
+    box-shadow: 0 -18px 44px rgba(var(--style-shadow-rgb, 88, 55, 68), 0.065), inset 0 1px 0 rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.68);
 }
 
 .desktop-component-grabber {
@@ -253,23 +469,25 @@ body::after {
     align-items: center;
     justify-content: flex-start;
     gap: 16px;
-    padding: 0 18px 12px;
+    padding: 4px 22px 16px;
 }
 
 .desktop-component-kicker {
     display: block;
-    margin-bottom: 4px;
-    font-size: 10px;
+    margin-bottom: 6px;
+    font-size: 9px;
     line-height: 1;
-    letter-spacing: 0;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
     color: var(--style-accent-strong, #8d6e7b);
 }
 
 .desktop-component-head h2 {
-    font-size: 21px;
-    line-height: 1.15;
+    font-size: 23px;
+    line-height: 1.05;
     font-weight: 520;
-    letter-spacing: 0;
+    letter-spacing: 0.04em;
+    font-family: var(--rinno-editorial-serif);
     color: var(--text-main);
 }
 
@@ -291,7 +509,7 @@ body::after {
 }
 
 .desktop-component-action:active {
-    transform: scale(0.92);
+    opacity: 0.72;
 }
 
 .desktop-component-action svg {
@@ -307,36 +525,37 @@ body::after {
 .desktop-component-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: 0 12px 14px;
+    padding: 0 16px 18px;
 }
 
 .desktop-component-item {
-    min-height: 64px;
+    min-height: 68px;
     display: grid;
-    grid-template-columns: 42px minmax(0, 1fr) auto;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
     align-items: center;
-    gap: 12px;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.08);
-    border-top-color: rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.20);
-    background: linear-gradient(135deg, rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.11), rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.024));
-    box-shadow: 0 4px 12px rgba(var(--style-shadow-rgb, 88, 55, 68), 0.018), inset 0 1px 0 rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.18);
+    gap: 14px;
+    padding: 12px;
+    border-radius: 18px;
+    border: var(--rinno-component-border);
+    border-top: var(--rinno-component-highlight);
+    background: var(--rinno-component-surface-soft);
+    box-shadow: var(--rinno-component-shadow-soft);
 }
 
 .desktop-component-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 8px;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--style-accent-strong, #8d6e7b);
-    background: linear-gradient(135deg, rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.20), rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.045));
-    box-shadow: 0 6px 14px rgba(var(--style-shadow-rgb, 88, 55, 68), 0.025), inset 0 1px 0 rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.28);
+    background: var(--rinno-app-icon-surface);
+    border: var(--rinno-app-icon-border);
+    box-shadow: var(--rinno-app-icon-shadow);
 }
 
 .desktop-component-icon svg {
@@ -405,37 +624,41 @@ body.desktop-component-open .desktop-component-sheet {
 
 .pagination {
     position: fixed; bottom: 118px; left: 50%; transform: translateX(-50%);
-    display: flex; gap: 8px; z-index: 950; pointer-events: none;
+    display: flex; gap: 9px; z-index: 950; pointer-events: none;
 }
 .pagination .dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: rgba(0, 0, 0, 0.1); border: 1px solid rgba(255,255,255,0.3); transition: all 0.3s ease;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(var(--style-shadow-rgb, 88, 55, 68), 0.14);
+    border: 0;
+    transition: width 0.3s ease, background 0.3s ease, opacity 0.3s ease;
 }
 .pagination .dot.active {
-    background: #ffffff; border-color: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    width: 17px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 2px 8px rgba(var(--style-shadow-rgb, 88, 55, 68), 0.10);
 }
 
 .dock {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    width: calc(100% - 64px); max-width: var(--desktop-layout-max-width); height: 84px; border-radius: 42px;
-    /* 【修改】Dock栏清透感 */
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.035) 56%, rgba(255, 255, 255, 0.012));
-    -webkit-backdrop-filter: blur(48px) saturate(176%);
-    backdrop-filter: blur(48px) saturate(176%);
-    border: 1px solid rgba(255, 255, 255, 0.1); border-top: 1px solid rgba(255, 255, 255, 0.34); border-left: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.44); 
+    width: calc(100% - 64px); max-width: var(--desktop-layout-max-width); height: 82px; border-radius: 41px;
+    background: var(--rinno-component-surface);
+    border: var(--rinno-component-border);
+    border-top: var(--rinno-component-highlight);
+    box-shadow: 0 18px 42px rgba(var(--style-shadow-rgb, 88, 55, 68), 0.07), inset 0 1px 0 rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.72);
     z-index: 900;
     display: flex; justify-content: space-around; align-items: center; padding: 0 16px;
 }
 .dock .app-wrapper .app-name { display: none; }
 
-/* ================= 页面滑动布局 ================= */
-.slider-container { position: relative; z-index: 2; width: 100vw; height: var(--app-height); overflow: visible; display: flex; touch-action: none; transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+/* ================= Slider & Pages ================= */
+.slider-viewport { position: fixed; top: var(--rinno-visual-viewport-top, 0px); left: 0; right: auto; bottom: auto; z-index: 2; width: var(--app-width, 100vw); height: var(--app-height, 100vh); min-height: 0; overflow: hidden; }
+.slider-container { position: relative; width: 100%; height: 100%; min-height: 0; overflow: visible; display: flex; touch-action: pan-y; transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
 .page {
-    width: 100vw; height: var(--app-height); max-height: var(--app-height); flex-shrink: 0; overflow: hidden; touch-action: none;
-    padding: 60px var(--desktop-layout-side-gutter) 185px var(--desktop-layout-side-gutter); display: grid; 
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: max-content; gap: 24px 16px; align-content: start;
+    width: 100%; height: 100%; max-height: none; flex-shrink: 0; overflow: hidden; touch-action: manipulation;
+    padding: 64px var(--desktop-layout-side-gutter) 184px var(--desktop-layout-side-gutter); display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: max-content; gap: 26px 18px; align-content: start;
 }
 
 .full-width { grid-column: span 2; width: 100%; }
@@ -451,25 +674,26 @@ body.desktop-component-open .desktop-component-sheet {
     width: min(100%, var(--desktop-component-max-width));
 }
 
-/* ================= 通用组件类 ================= */
+/* ================= Common Components ================= */
 .glass-panel {
-    background: var(--glass-bg); 
-    -webkit-backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val)); 
-    backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
-    border: var(--glass-border); border-top: 1px solid rgba(255,255,255,0.38); border-left: 1px solid rgba(255,255,255,0.2);
-    box-shadow: var(--glass-shadow); border-radius: var(--radius-lg); padding: 20px;
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    border-top: var(--rinno-component-highlight);
+    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius-lg);
+    padding: 22px;
 }
-.app-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s ease; }
-.app-wrapper:active { transform: scale(0.92); filter: brightness(1.1); }
+.app-wrapper { display: flex; flex-direction: column; align-items: center; gap: 9px; cursor: pointer; transition: transform 0.24s ease, opacity 0.24s ease, filter 0.24s ease; }
+.app-wrapper:active { transform: scale(0.97); filter: brightness(1.02); opacity: 0.88; }
 .app-icon {
-    width: 56px; height: 56px; border-radius: var(--radius-md);
+    width: 58px; height: 58px; border-radius: var(--radius-md);
     background: var(--rinno-app-icon-surface);
     border: var(--rinno-app-icon-border);
     box-shadow: var(--rinno-app-icon-shadow);
     display: flex; justify-content: center; align-items: center;
 }
-.app-icon svg { width: 26px; height: 26px; stroke: var(--text-main); stroke-width: 1.2; fill: none; }
-.app-name { font-size: 12px; font-weight: normal; color: var(--text-main); letter-spacing: 0.5px; text-shadow: 0 1px 3px rgba(255,255,255,0.7); }
+.app-icon svg { width: 25px; height: 25px; stroke: var(--text-main); stroke-width: 1.25; fill: none; opacity: 0.92; }
+.app-name { font-size: 11px; font-weight: 420; color: var(--text-main); letter-spacing: 0.04em; text-shadow: 0 1px 3px rgba(255,255,255,0.72); }
 .page > .app-wrapper { justify-self: center; align-self: start; width: max-content; min-width: 72px; }
 
 .flex-row { display: flex; gap: 16px; width: 100%; align-items: stretch; }
@@ -477,42 +701,48 @@ body.desktop-component-open .desktop-component-sheet {
 .app-grid-2x2 {
     display: grid;
     grid-template-columns: repeat(2, minmax(72px, 1fr));
-    grid-template-rows: repeat(2, 78px);
-    grid-auto-rows: 78px;
+    grid-template-rows: repeat(2, 82px);
+    grid-auto-rows: 82px;
     gap: 16px;
     justify-items: center;
     align-items: start;
     align-content: center;
-    height: 172px;
-    min-height: 172px;
+    height: 180px;
+    min-height: 180px;
     overflow: visible;
 }
 .app-grid-2x2 .app-wrapper {
     width: 72px;
-    height: 78px;
+    height: 82px;
     min-width: 72px;
     justify-content: start;
 }
-.app-grid-4-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; width: 100%; justify-items: center; margin-top: 10px;}
+.app-grid-4-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 14px; width: 100%; justify-items: center; margin-top: 4px;}
 .free-icon-grid { min-height: 88px; align-content: start; margin-top: 0; }
-.free-icon-grid.app-grid-2x2 { min-height: 172px; align-content: center; }
+.free-icon-grid.app-grid-2x2 { min-height: 180px; align-content: center; }
 .free-icon-grid:empty {
-    display: none !important;
-    height: 0 !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    display: none;
+    height: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
 }
 .svg-icon { stroke-linecap: round; stroke-linejoin: round; }
 
-/* ================= 锁屏功能组件 ================= */
+/* ================= Lock Screen ================= */
 .lock-screen {
-    position: fixed; top: 0; left: 0; width: 100vw; height: var(--app-height);
-    /* 【修改】锁屏模糊度和透明度优化 */
+    position: fixed;
+    top: var(--rinno-visual-viewport-top, 0px);
+    left: 0;
+    right: auto;
+    bottom: auto;
+    width: var(--app-width, 100vw);
+    height: var(--app-height, 100vh);
+    min-height: 0;
     background: var(--page-bg);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    z-index: 998; 
+    z-index: 998;
     display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
     transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease;
 }
@@ -542,17 +772,15 @@ body.desktop-component-open .desktop-component-sheet {
 .keypad { display: grid; grid-template-columns: repeat(3, 75px); gap: 20px 28px; }
 .key {
     width: 75px; height: 75px; border-radius: 50%;
-    /* 【修改】按键清透感 */
-    background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.02));
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.04), inset 0 1px 2px rgba(255,255,255,0.6);
-    border: 1px solid rgba(255, 255, 255, 0.2); border-top: 1px solid rgba(255, 255, 255, 0.6);
+    background: var(--rinno-component-surface-soft);
+    box-shadow: var(--rinno-component-shadow-soft);
+    border: var(--rinno-component-border);
+    border-top: var(--rinno-component-highlight);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    cursor: pointer; transition: all 0.1s ease;
+    cursor: pointer; transition: transform 0.12s ease, opacity 0.12s ease;
 }
-.key:active { transform: scale(0.92); }
-.key .num { font-size: 32px; font-weight: 300; color: var(--text-main); line-height: 1; }
+.key:active { opacity: 0.78; }
+.key .num { font-size: 32px; font-weight: 300; color: var(--text-main); line-height: 1; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; }
 .key .letters { font-size: 10px; font-weight: normal; letter-spacing: 1px; color: var(--text-sub); margin-top: 2px; }
 .key .letters.letters-placeholder { opacity: 0; }
 .key.empty { background: transparent; box-shadow: none; border: none; cursor: default; }
@@ -561,14 +789,16 @@ body.desktop-component-open .desktop-component-sheet {
 .key.action .num { font-size: 15px; font-weight: normal; }
 
 
-/* ================= 页面组件样式 ================= */
+/* ================= Desktop Card Components ================= */
 .new-info-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
 
-.info-header-bg { 
-    width: 100%; height: 185px; position: relative;
-    background: linear-gradient(to bottom, #cfcfd2, #b5b5b8); 
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 calc(100% - 20px), rgba(0, 0, 0, 0.58) calc(100% - 10px), rgba(0, 0, 0, 0.18) calc(100% - 4px), transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 calc(100% - 20px), rgba(0, 0, 0, 0.58) calc(100% - 10px), rgba(0, 0, 0, 0.18) calc(100% - 4px), transparent 100%);
+.info-header-bg {
+    width: 100%; height: 178px; position: relative;
+    background:
+        linear-gradient(135deg, rgba(var(--style-accent-soft-rgb, 246, 238, 241), 0.72), rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.48)),
+        linear-gradient(180deg, #d8d1d5, #c6bec3);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    overflow: hidden;
 }
 
 .info-header-bg::after {
@@ -576,15 +806,12 @@ body.desktop-component-open .desktop-component-sheet {
 }
 
 .info-bottom-part {
-    width: 100%; min-height: 175px; 
-    /* 【修改】底部卡片清透感 */
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.04) 58%, rgba(255, 255, 255, 0.015));
-    -webkit-backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
-    backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
-    border-top: 0; border-left: 1px solid rgba(255,255,255,0.16);
-    border-radius: 28px 28px 0 0; margin-top: -28px; position: relative; z-index: 1;
-    display: flex; flex-direction: column; align-items: center; padding-bottom: 24px;
-    box-shadow: 0 -4px 14px rgba(255,255,255,0.08), var(--glass-shadow); 
+    width: 100%; min-height: 170px;
+    background: var(--rinno-component-surface);
+    border-top: var(--rinno-component-highlight);
+    border-radius: 30px 30px 0 0; margin-top: -22px; position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center; padding-bottom: 25px;
+    box-shadow: 0 -8px 22px rgba(var(--style-shadow-rgb, 88, 55, 68), 0.035);
 }
 
 .info-bottom-part::before {
@@ -597,199 +824,188 @@ body.desktop-component-open .desktop-component-sheet {
 }
 
 .avatar-overlap-wrapper {
-    margin-top: -55px;
+    margin-top: -52px;
     z-index: 2;
     border-radius: 50%;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    padding: 0;
-    background: transparent;
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 12px 28px rgba(var(--style-shadow-rgb, 88, 55, 68), 0.08);
+    padding: 4px;
+    background: var(--rinno-paper, #fffaf8);
 }
-.avatar-inner { width: 110px; height: 110px; border-radius: 50%; background: linear-gradient(135deg, #f0f0f3, #e2e2e5); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); border: none; }
+.avatar-inner { width: 104px; height: 104px; border-radius: 50%; background: linear-gradient(135deg, #f4edef, #e8dde2); box-shadow: inset 0 0 0 1px rgba(var(--style-shadow-rgb, 88, 55, 68), 0.06); border: 1px solid rgba(255,255,255,0.78); }
 
-.text-area { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 12px; padding: 0 20px;}
-.nickname { font-size: 20px; font-weight: normal; font-family: Georgia, serif; }
-.account { font-size: 12px; color: #a0a0a8; font-style: italic;}
-.signature { font-size: 12px; margin-top: 8px; opacity: 0.85; text-align: center; }
+.text-area { display: flex; flex-direction: column; align-items: center; gap: 7px; margin-top: 13px; padding: 0 28px; text-align: center;}
+.nickname { font-size: 21px; font-weight: 500; font-family: var(--rinno-editorial-serif); letter-spacing: 0.035em; }
+.account { font-size: 11px; color: var(--text-sub); font-style: italic; letter-spacing: 0.07em; }
+.signature { font-size: 12px; margin-top: 8px; opacity: 0.84; text-align: center; line-height: 1.65; }
 .location {
+    margin-top: 10px;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 4px;
-    margin-top: 14px;
-    padding: 4px 10px;
+    gap: 5px;
+    padding: 6px 12px;
     border-radius: 999px;
-    font-size: 11px;
-    color: rgba(94, 95, 108, 0.88);
-    background: linear-gradient(135deg, rgba(255,255,255,0.36), rgba(255,255,255,0.12));
-    border: 1px solid rgba(255,255,255,0.34);
-    box-shadow: 0 10px 24px rgba(152, 148, 170, 0.14);
-    -webkit-backdrop-filter: blur(18px) saturate(160%);
-    backdrop-filter: blur(18px) saturate(160%);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--style-accent-strong, #8d6e7b);
+    background: var(--rinno-component-surface-soft);
+    border: var(--rinno-component-border);
+    box-shadow: var(--rinno-component-shadow-soft);
 }
 .location svg { width: 11px; height: 11px; fill: currentColor; stroke: none; opacity: 0.82; }
 .location span { line-height: 1; }
 
-.chat-bubble-group { display: flex; flex-direction: column; gap: 12px; justify-content: center; }
-.chat-bubble { 
-    /* 【修改】气泡清透感 */
-    background: linear-gradient(135deg, rgba(255,255,255,0.26), rgba(255,255,255,0.035)); 
-    -webkit-backdrop-filter: blur(32px) saturate(162%);
-    backdrop-filter: blur(32px) saturate(162%);
-    border: 1px solid rgba(255,255,255,0.13); border-top: 1px solid rgba(255,255,255,0.42);
-    padding: 12px 16px; border-radius: 20px; font-size: 11px; color: #444; 
-    box-shadow: 0 8px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.46); 
-    width: fit-content; word-break: break-all;
+.chat-bubble-group { display: flex; flex-direction: column; gap: 14px; justify-content: center; align-self: stretch; }
+.chat-bubble {
+    background: var(--rinno-component-surface-soft);
+    border: var(--rinno-component-border);
+    border-top: var(--rinno-component-highlight);
+    padding: 14px 16px;
+    border-radius: 22px;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--text-main);
+    box-shadow: var(--rinno-component-shadow-soft);
+    width: fit-content;
+    max-width: 100%;
+    word-break: break-word;
 }
 .chat-bubble.tail { border-bottom-left-radius: 4px; position: relative;}
-.chat-bubble.tail::before { 
+.chat-bubble.tail::before {
     content: none;
     display: none;
 }
 
-.new-music-player { 
-    display: flex; flex-direction: column; gap: 18px; align-items: center; padding: 12px 16px; 
-    background: var(--glass-bg); border: var(--glass-border); border-top: 1px solid rgba(255,255,255,0.38); border-left: 1px solid rgba(255,255,255,0.2);
-    -webkit-backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
-    backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
-    border-radius: var(--radius-lg); box-shadow: var(--glass-shadow);
+.new-music-player {
+    display: flex; flex-direction: column; gap: 18px; align-items: center; padding: 16px 20px 15px;
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    border-top: var(--rinno-component-highlight);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
 }
-.music-title-deco { font-size: 14px; font-weight: normal; font-family: "Times New Roman", serif; font-style: italic; color: #111; display: flex; gap: 8px; align-items: center; }
+.music-title-deco { font-size: 14px; font-weight: normal; font-family: var(--rinno-editorial-serif); font-style: italic; color: var(--text-main); display: flex; gap: 8px; align-items: center; letter-spacing: 0.035em; }
 .music-title-deco span:not([data-edit-id]) { font-style: normal; font-size: 12px; opacity: 0.6; }
 .music-title-text { padding: 0 4px; }
 .progress-container { width: 100%; position: relative; height: 14px; display: flex; align-items: center; touch-action: none; cursor: pointer; }
-.progress-line-bg { width: 100%; height: 2px; background: rgba(0,0,0,0.05); box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); border-radius: 1px; position: absolute; left: 0;}
-.progress-line-fill { width: 60%; height: 2px; background: linear-gradient(90deg, #555, #111); border-radius: 1px; position: absolute; left: 0;}
+.progress-line-bg { width: 100%; height: 1px; background: rgba(var(--style-shadow-rgb, 88, 55, 68),0.12); box-shadow: none; border-radius: 1px; position: absolute; left: 0;}
+.progress-line-fill { width: 60%; height: 1px; background: linear-gradient(90deg, var(--style-accent-strong, #8d6e7b), var(--text-main)); border-radius: 1px; position: absolute; left: 0;}
 
-.progress-heart { 
-    position: absolute; left: 60%; transform: translateX(-50%); 
+.progress-heart {
+    position: absolute; left: 60%; transform: translateX(-50%);
     display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, #fff, #f0f0f0); border-radius: 50%; padding: 2px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,1); border: 1px solid rgba(0,0,0,0.05);
+    background: var(--rinno-component-surface-soft); border-radius: 50%; padding: 3px;
+    box-shadow: var(--rinno-component-shadow-soft); border: var(--rinno-component-border);
 }
-.progress-heart svg { width: 10px; height: 10px; fill: #111; }
+.progress-heart svg { width: 10px; height: 10px; fill: var(--text-main); }
 
-.music-time-row { width: 100%; display: flex; justify-content: space-between; font-size: 12px; color: var(--text-sub);}
+.music-time-row { width: 100%; display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 0.08em; color: var(--text-sub);}
 
-.dreamy-card-wrapper { position: relative; width: 100%; margin-bottom: 2px; }
-.dreamy-bg { width: 100%; height: 180px; background: linear-gradient(to right, #ececed, #d5d5db); border-radius: var(--radius-lg); position: relative; border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 4px 16px rgba(0,0,0,0.03);}
+.dreamy-card-wrapper { position: relative; width: 100%; margin-bottom: 4px; }
+.dreamy-bg { width: 100%; height: 184px; background: linear-gradient(135deg, rgba(var(--style-accent-soft-rgb, 246,238,241),0.82), rgba(var(--style-glass-tint-rgb,255,251,252),0.62)), linear-gradient(to right, #eee8e9, #d8cfd4); border-radius: var(--radius-lg); position: relative; border: var(--rinno-component-border); border-top: var(--rinno-component-highlight); box-shadow: var(--rinno-editorial-shadow-soft);}
 
-.rabbit-card { position: absolute; right: 10px; bottom: -24px; display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 10; }
-.rabbit-img-box { 
-    width: 64px; height: 64px; 
-    /* 【修改】图片框清透感 */
-    background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.025));
-    -webkit-backdrop-filter: blur(32px) saturate(158%);
-    backdrop-filter: blur(32px) saturate(158%);
-    border-radius: 14px; box-shadow: 0 9px 22px rgba(0,0,0,0.045), inset 0 1px 0 rgba(255,255,255,0.44); 
-    display: flex; justify-content: center; align-items: center; 
-    border: 1px solid rgba(255,255,255,0.13); border-top: 1px solid rgba(255,255,255,0.38);
+.rabbit-card { position: absolute; right: 13px; bottom: -25px; display: flex; flex-direction: column; align-items: center; gap: 7px; z-index: 10; }
+.rabbit-img-box {
+    width: 66px; height: 66px;
+    background: var(--rinno-component-surface-soft);
+    border-radius: 18px; box-shadow: var(--rinno-component-shadow-soft);
+    display: flex; justify-content: center; align-items: center;
+    border: var(--rinno-component-border); border-top: var(--rinno-component-highlight);
 }
-.rabbit-text { font-size: 11px; font-weight: normal; color: #111; letter-spacing: 1px; text-shadow: 0 1px 2px rgba(255,255,255,0.6);}
+.rabbit-text { font-size: 10px; font-weight: 420; color: var(--text-main); letter-spacing: 0.12em; text-shadow: 0 1px 2px rgba(255,255,255,0.72);}
 
-.new-sun-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: 100%; padding-top: 10px;}
-.sun-avatar { width: 84px; height: 84px; border-radius: 50%; background: linear-gradient(135deg, #f0f0f3, #e2e2e5); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); border: 2px solid rgba(255,255,255,0.8); }
-.sun-name { font-size: 14px; font-weight: normal; font-family: monospace; }
-.sun-tag { 
-    /* 【修改】标签清透感 */
-    background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.02));
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    padding: 6px 14px 6px 6px; border-radius: 20px; display: flex; align-items: center; gap: 8px; 
-    border: 1px solid rgba(255,255,255,0.2); border-top: 1px solid rgba(255,255,255,0.6); box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+.new-sun-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; height: 100%; padding: 14px 10px; background: transparent; }
+.sun-avatar { width: 82px; height: 82px; border-radius: 50%; background: linear-gradient(135deg, #f4edef, #e7dce1); box-shadow: inset 0 0 0 1px rgba(var(--style-shadow-rgb, 88,55,68),0.06); border: 1px solid rgba(255,255,255,0.8); }
+.sun-name { font-size: 13px; font-weight: 420; font-family: var(--rinno-editorial-serif); letter-spacing: 0.08em; }
+.sun-tag {
+    background: var(--rinno-component-surface-soft);
+    padding: 7px 13px 7px 7px; border-radius: 999px; display: flex; align-items: center; gap: 8px;
+    border: var(--rinno-component-border); border-top: var(--rinno-component-highlight); box-shadow: var(--rinno-component-shadow-soft);
 }
-.tag-icon { width: 22px; height: 22px; border-radius: 50%; background: #444; color: #fff; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: normal; }
-.tag-text { font-size: 11px; color: #333; font-weight: normal; }
+.tag-icon { width: 22px; height: 22px; border-radius: 50%; background: var(--text-main); color: var(--rinno-paper, #fffaf8); display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 420; }
+.tag-text { font-size: 10px; color: var(--text-main); font-weight: 420; letter-spacing: 0.04em; }
 
-.new-dual-avatar { display: flex; justify-content: center; gap: 24px; align-items: center; width: 100%; height: 100%;}
+.new-dual-avatar { display: flex; justify-content: center; gap: 26px; align-items: center; width: 100%; height: 100%; padding: 8px 0;}
 .avatar-col { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-.name-bubble { 
-    /* 【修改】气泡清透感 */
-    background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.05));
-    -webkit-backdrop-filter: blur(25px);
-    backdrop-filter: blur(25px);
-    padding: 6px 14px; border-radius: 12px; font-family: "Courier New", Courier, monospace; font-size: 13px; font-weight: normal; 
-    color: transparent; -webkit-text-stroke: 0.5px #444; position: relative; 
-    border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 6px 16px rgba(0,0,0,0.04), inset 0 1px 1px rgba(255,255,255,0.6); 
+.name-bubble {
+    background: var(--rinno-component-surface-soft);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-family: var(--rinno-editorial-serif);
+    font-size: 13px;
+    font-weight: 420;
+    color: var(--text-main);
+    position: relative;
+    border: var(--rinno-component-border);
+    border-top: var(--rinno-component-highlight);
+    box-shadow: var(--rinno-component-shadow-soft);
 }
-.name-bubble::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid rgba(255,255,255,0.4); }
-.avatar-circle { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #f0f0f3, #e2e2e5); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); border: 2px solid rgba(255,255,255,0.8); }
-.emoji-text { font-size: 12px; color: #111; font-weight: normal; letter-spacing: 1px;}
+.name-bubble::after { content: none; }
+.avatar-circle { width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, #f4edef, #e8dde2); box-shadow: inset 0 0 0 1px rgba(var(--style-shadow-rgb,88,55,68),0.06); border: 1px solid rgba(255,255,255,0.8); }
+.emoji-text { font-size: 11px; color: var(--text-main); font-weight: 420; letter-spacing: 0.08em;}
 
-.mock-chat-wrapper { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.mock-chat-wrapper { display: flex; flex-direction: column; gap: 13px; width: 100%; }
 
-.chat-time-capsule { 
-    background: rgba(255, 255, 255, 0.2); padding: 4px 14px; border-radius: 14px;
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.2);
-    font-size: 11px; font-weight: normal; color: #555; width: fit-content; 
-    margin: 0 auto; letter-spacing: 0.5px;
+.chat-time-capsule {
+    background: var(--rinno-component-surface-soft); padding: 5px 14px; border-radius: 999px;
+    border: var(--rinno-component-border);
+    border-top: var(--rinno-component-highlight);
+    box-shadow: var(--rinno-component-shadow-soft);
+    font-size: 10px; font-weight: 420; color: var(--text-sub); width: fit-content;
+    margin: 0 auto; letter-spacing: 0.12em;
 }
 
 .chat-bubble-capsule {
-    /* 【修改】模拟气泡清透感 */
-    background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.05)); border-radius: 20px; padding: 12px 16px;
-    font-size: 11px; font-weight: normal; color: #444; width: fit-content;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.6);
-    -webkit-backdrop-filter: blur(25px) saturate(140%);
-    backdrop-filter: blur(25px) saturate(140%);
-    border: 1px solid rgba(255,255,255,0.2); border-top: 1px solid rgba(255,255,255,0.6);
+    background: var(--rinno-component-surface-soft);
+    border-radius: 24px;
+    padding: 13px 17px;
+    font-size: 11px;
+    line-height: 1.6;
+    font-weight: normal;
+    color: var(--text-main);
+    width: fit-content;
+    box-shadow: var(--rinno-component-shadow-soft);
+    border: var(--rinno-component-border);
+    border-top: var(--rinno-component-highlight);
 }
 
 .chat-img-row { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 4px;}
 .chat-send-btn {
-    /* 【修改】按钮清透感 */
-    width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.05));
-    -webkit-backdrop-filter: blur(25px);
-    backdrop-filter: blur(25px);
-    border: 1px solid rgba(255,255,255,0.2);
+    width: 38px; height: 38px; border-radius: 50%; background: var(--rinno-component-surface-soft);
+    border: var(--rinno-component-border);
+    border-top: var(--rinno-component-highlight);
     display: flex; justify-content: center; align-items: center;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.06), inset 0 1px 1px rgba(255,255,255,0.6); cursor: pointer;
+    box-shadow: var(--rinno-component-shadow-soft); cursor: pointer;
 }
-.chat-send-btn svg { width: 16px; height: 16px; stroke: #333; stroke-width: 1.8; fill: none; margin-right: 2px;} 
+.chat-send-btn svg { width: 16px; height: 16px; stroke: var(--text-main); stroke-width: 1.7; fill: none; margin-right: 2px;}
 
 .chat-img-card {
-    /* 【修改】发送图片框清透感 */
-    width: 100px; height: 100px; border-radius: 18px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.02));
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.06), inset 0 1px 1px rgba(255,255,255,0.6);
-    border: 1px solid rgba(255,255,255,0.2); border-top: 1px solid rgba(255,255,255,0.6);
+    width: 102px; height: 102px; border-radius: 22px;
+    background: var(--rinno-component-surface-soft);
+    box-shadow: var(--rinno-component-shadow-soft);
+    border: var(--rinno-component-border); border-top: var(--rinno-component-highlight);
 }
 
 .chat-input-bar {
-    /* 【修改】输入栏清透感 */
-    background: linear-gradient(135deg, rgba(255,255,255,0.35), rgba(255,255,255,0.05)); border-radius: 24px; padding: 8px 12px 8px 16px;
+    background: var(--rinno-component-surface); border-radius: 26px; padding: 9px 12px 9px 17px;
     display: flex; justify-content: space-between; align-items: center;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.06), inset 0 1px 1px rgba(255,255,255,0.6); margin-top: 6px;
-    -webkit-backdrop-filter: blur(30px) saturate(140%);
-    backdrop-filter: blur(30px) saturate(140%);
-    border: 1px solid rgba(255,255,255,0.2); border-top: 1px solid rgba(255,255,255,0.6);
+    box-shadow: var(--rinno-component-shadow); margin-top: 6px;
+    border: var(--rinno-component-border); border-top: var(--rinno-component-highlight);
 }
-.chat-input-text { font-size: 13px; font-weight: normal; color: #333; letter-spacing: -0.5px;}
+.chat-input-text { font-size: 13px; font-weight: 400; color: var(--text-main); letter-spacing: 0;}
 .chat-input-icons { display: flex; align-items: center; gap: 10px; }
-.chat-icon-btn { width: 18px; height: 18px; stroke: #333; stroke-width: 1.8; fill: none; }
+.chat-icon-btn { width: 18px; height: 18px; stroke: var(--text-main); stroke-width: 1.7; fill: none; opacity: 0.78; }
 .chat-add-btn {
-    width: 26px; height: 26px; border-radius: 50%; background: #333;
-    display: flex; justify-content: center; align-items: center; color: #fff;
+    width: 27px; height: 27px; border-radius: 50%;
+    background: var(--rinno-component-surface-soft);
+    border: var(--rinno-component-border);
+    box-shadow: var(--rinno-component-shadow-soft);
+    display: flex; justify-content: center; align-items: center; color: var(--text-main);
     font-size: 18px; font-weight: 300; line-height: 1; padding-bottom: 2px;
 }
 
-/* Final image-style pass for formerly black action buttons. */
-.chat-add-btn {
-    border: 1px solid rgba(96, 73, 84, 0.14) !important;
-    background:
-        linear-gradient(135deg, rgba(255, 253, 253, 0.96), rgba(239, 231, 236, 0.84)),
-        repeating-linear-gradient(135deg, rgba(126, 91, 105, 0.055) 0 1px, transparent 1px 13px) !important;
-    color: #2a2428 !important;
-    box-shadow: 0 8px 18px rgba(52, 40, 46, 0.09), inset 0 0 0 1px rgba(255, 255, 255, 0.76) !important;
-}
 
-/* ================= 解决自动排版的空槽基类 ================= */
-/* 历史布局里可能残留透明空槽；这里彻底取消占位，避免移动端被撑出纵向空白 */
+/* ================= Desktop Widgets & Badge Pins ================= */
+/* 鍘嗗彶甯冨眬閲屽彲鑳芥畫鐣欓€忔槑绌烘Ы锛涜繖閲屽交搴曞彇娑堝崰浣嶏紝閬垮厤绉诲姩绔鎾戝嚭绾靛悜绌虹櫧 */
 /* Desktop component drawer: single 2x2 badge pin. */
 .badge-grid-widget {
     display: grid;
@@ -1315,8 +1531,8 @@ body.desktop-component-open .desktop-component-sheet {
     position: relative;
     width: min(100%, 172px);
     max-width: 172px;
-    height: 172px;
-    min-height: 172px;
+    height: 180px;
+    min-height: 180px;
     justify-self: center;
     align-self: start;
     isolation: isolate;
@@ -1674,10 +1890,10 @@ body.desktop-component-open .desktop-component-sheet {
 .weather-polaroid-widget,
 .snow-heart-widget,
 .camera-disc-widget {
-    background: transparent !important;
-    border: 0 !important;
-    outline: 0 !important;
-    box-shadow: none !important;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
     overflow: visible;
 }
 
@@ -1691,7 +1907,7 @@ body.desktop-component-open .desktop-component-sheet {
 .snow-heart-photo,
 .camera-disc-body,
 .camera-disc-photo {
-    filter: none !important;
+    filter: none;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -1706,7 +1922,7 @@ body.desktop-component-open .desktop-component-sheet {
     left: 43px;
     top: 45px;
     width: 88px;
-    height: 78px;
+    height: 82px;
     background:
         linear-gradient(140deg, rgba(255, 255, 255, 0.85), rgba(204, 207, 208, 0.72) 46%, rgba(154, 158, 160, 0.62));
     clip-path: polygon(50% 96%, 18% 69%, 6% 47%, 7% 27%, 19% 13%, 35% 11%, 50% 25%, 65% 11%, 81% 13%, 93% 27%, 94% 47%, 82% 69%);
@@ -1741,8 +1957,8 @@ body.desktop-component-open .desktop-component-sheet {
 }
 
 .camera-disc-brand::before {
-    content: none !important;
-    display: none !important;
+    content: none;
+    display: none;
 }
 
 .camera-disc-record {
@@ -1789,7 +2005,7 @@ body.desktop-component-open .desktop-component-sheet {
 }
 
 .weather-polaroid-snow {
-    display: none !important;
+    display: none;
 }
 
 .weather-polaroid-sheet,
@@ -1878,15 +2094,15 @@ body.desktop-component-open .desktop-component-sheet {
 .image-grid-widget {
     position: relative;
     width: 100%;
-    height: 172px;
-    min-height: 172px;
+    height: 180px;
+    min-height: 180px;
     justify-self: stretch;
     align-self: start;
     isolation: isolate;
-    background: transparent !important;
-    border: 0 !important;
-    outline: 0 !important;
-    box-shadow: none !important;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
     overflow: visible;
     pointer-events: none;
 }
@@ -2513,23 +2729,23 @@ body.desktop-component-open .desktop-component-sheet {
 .mood-bento-widget,
 .profile-receipt-widget,
 .date-almanac-widget {
-    background: transparent !important;
-    border: 0 !important;
-    outline: 0 !important;
-    box-shadow: none !important;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
     overflow: visible;
 }
 
 .mood-bento-backdrop,
 .profile-receipt-widget::before,
 .date-almanac-widget::before {
-    content: none !important;
-    display: none !important;
+    content: none;
+    display: none;
 }
 
 .mood-bento-widget {
-    height: 172px;
-    min-height: 172px;
+    height: 180px;
+    min-height: 180px;
     color: rgba(255, 255, 255, 0.92);
 }
 
@@ -2605,8 +2821,8 @@ body.desktop-component-open .desktop-component-sheet {
 }
 
 .profile-receipt-widget {
-    height: 172px;
-    min-height: 172px;
+    height: 180px;
+    min-height: 180px;
     color: #16161a;
 }
 
@@ -2728,19 +2944,19 @@ body.desktop-component-open .desktop-component-sheet {
 .mood-bento-widget,
 .profile-receipt-widget {
     position: relative;
-    height: 172px;
-    min-height: 172px;
+    height: 180px;
+    min-height: 180px;
     overflow: visible;
-    background: transparent !important;
-    border: 0 !important;
-    outline: 0 !important;
-    box-shadow: none !important;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
 }
 
 .mood-bento-backdrop,
 .profile-receipt-widget::before {
-    content: none !important;
-    display: none !important;
+    content: none;
+    display: none;
 }
 
 .mood-bento-widget {
@@ -3021,7 +3237,7 @@ body.desktop-component-open .desktop-component-sheet {
     letter-spacing: 0;
 }
 
-.empty-slot { display: none !important; opacity: 0 !important; pointer-events: none !important; cursor: default !important; min-height: 0 !important; }
+.empty-slot { display: none; opacity: 0; pointer-events: none; cursor: default; min-height: 0; }
 .empty-slot.mock-chat-wrapper { min-height: 160px; }
 .empty-slot.new-info-card { min-height: 300px; }
 .empty-slot.new-music-player { min-height: 100px; }
@@ -3040,24 +3256,24 @@ body.desktop-component-open .desktop-component-sheet {
 .empty-slot.date-almanac-widget,
 .empty-slot.moment-gallery-widget { min-height: 172px; }
 .empty-slot.date-almanac-widget { min-height: 86px; }
-body.edit-mode .empty-slot { animation: none !important; }
+body.edit-mode .empty-slot { animation: none; }
 
-/* ================= 长按编辑模式抖动动画 ================= */
+/* ================= Long-press Edit Mode ================= */
 @keyframes editJiggle {
     0% { transform: rotate(-1.5deg); }
     50% { transform: rotate(1.5deg); }
     100% { transform: rotate(-1.5deg); }
 }
-body.edit-mode .app-wrapper, 
+body.edit-mode .app-wrapper,
 body.edit-mode .page > div:not(.status-bar):not(.dock):not(.pagination):not(.search-pill),
 body.edit-mode .dock .app-wrapper {
     animation: editJiggle 0.3s infinite alternate ease-in-out;
     transform-origin: center center;
 }
 body.edit-mode .dragging {
-    animation: none !important;
+    animation: none;
 }
-/* 在编辑模式下隐藏分页上的点击，以免被误触 */
+/* 鍦ㄧ紪杈戞ā寮忎笅闅愯棌鍒嗛〉涓婄殑鐐瑰嚮锛屼互鍏嶈璇Е */
 body.edit-mode .pagination {
     pointer-events: none;
 }
@@ -3108,7 +3324,7 @@ body.edit-mode #slider > .page > [data-iid].dragging > .desktop-component-delete
     display: none;
 }
 
-/* ================= 风格应用写入的全局外观层 ================= */
+/* ================= Style App Global Theme Layer ================= */
 :root {
     --style-accent: #d9b7c0;
     --style-accent-strong: #8d6e7b;
@@ -3174,11 +3390,9 @@ body {
     font-weight: var(--style-font-weight);
 }
 
-body :where(
-    *:not(svg):not(svg *):not(path):not(circle):not(rect):not(line):not(polyline):not(polygon):not(stop):not(.new-info-card):not(.new-info-card *)
-) {
-    font-family: var(--style-global-font-family, var(--font-family)) !important;
-    font-weight: var(--style-font-weight) !important;
+input, textarea, button, select {
+    font-family: inherit;
+    font-weight: inherit;
 }
 
 body :is(
@@ -3191,8 +3405,8 @@ body :is(
     .private-contact-subtitle,
     .private-thread-subtitle
 ) {
-    font-family: "Petit Formal Script", "Times New Roman", cursive !important;
-    font-weight: 400 !important;
+    font-family: "Petit Formal Script", "Times New Roman", cursive;
+    font-weight: 400;
 }
 
 .lock-screen {
@@ -3264,6 +3478,14 @@ body[data-style-hide-dynamic-island="true"] .dynamic-island {
 body[data-style-hide-status-bar="true"][data-style-hide-dynamic-island="true"] .status-bar {
     background: transparent;
     pointer-events: none;
+}
+
+body[data-style-hide-status-bar="true"] {
+    --rinno-top-chrome-clearance: 22px;
+}
+
+body[data-style-hide-status-bar="true"][data-style-hide-dynamic-island="true"] {
+    --rinno-top-chrome-clearance: 0px;
 }
 
 body.style-theme-dark .home-indicator,
@@ -3398,7 +3620,7 @@ body[data-style-theme="dark"] .home-indicator {
 
 .chat-input-text {
     font-size: calc(13px * var(--style-font-size-scale));
-    letter-spacing: 0 !important;
+    letter-spacing: 0;
 }
 
 .lock-time {
@@ -3435,6 +3657,7 @@ body[data-style-theme="dark"] .home-indicator {
 
 .key .num {
     font-size: calc(32px * var(--style-font-size-scale));
+    font-weight: 300;
 }
 
 .key .letters {
@@ -3469,16 +3692,16 @@ body[data-style-theme="dark"] .home-indicator {
 
 .tag-icon,
 .chat-add-btn {
-    border: 1px solid rgba(var(--style-accent-strong-rgb, 141, 110, 123), 0.26) !important;
-    background: var(--style-primary-bg) !important;
-    color: var(--style-primary-text) !important;
-    box-shadow: 0 10px 22px rgba(var(--style-shadow-rgb), 0.06), inset 0 1px 0 rgba(var(--style-glass-tint-rgb), 0.76) !important;
+    border: 1px solid rgba(var(--style-accent-strong-rgb, 141, 110, 123), 0.26);
+    background: var(--style-primary-bg);
+    color: var(--style-primary-text);
+    box-shadow: 0 10px 22px rgba(var(--style-shadow-rgb), 0.06), inset 0 1px 0 rgba(var(--style-glass-tint-rgb), 0.76);
 }
 
 .search-pill svg,
 .chat-send-btn svg,
 .chat-icon-btn {
-    stroke: var(--text-sub) !important;
+    stroke: var(--text-sub);
 }
 
 .music-title-deco,
@@ -3486,11 +3709,11 @@ body[data-style-theme="dark"] .home-indicator {
 .tag-text,
 .emoji-text,
 .chat-input-text {
-    color: var(--text-main) !important;
+    color: var(--text-main);
 }
 
 .name-bubble {
-    -webkit-text-stroke-color: var(--style-accent-strong) !important;
+    -webkit-text-stroke-color: var(--style-accent-strong);
 }
 
 body[data-style-icon="soft"] .app-icon svg {
@@ -3500,8 +3723,8 @@ body[data-style-icon="soft"] .app-icon svg {
 
 body[data-style-icon="filled"] .app-icon svg,
 body[data-style-icon="filled"] .app-icon svg * {
-    fill: currentColor !important;
-    stroke: none !important;
+    fill: currentColor;
+    stroke: none;
 }
 
 body[data-style-icon="line"] .app-icon svg,
@@ -3517,8 +3740,23 @@ body[data-style-icon="line"] .app-icon svg * {
     background-repeat: no-repeat, no-repeat;
 }
 
-.app-wrapper.style-icon-cover .app-icon svg {
+.app-wrapper.style-icon-cover[data-style-app-cover-ready="true"] .app-icon svg,
+.app-wrapper.style-icon-cover[data-style-app-cover-ready="true"] .app-icon svg * {
     opacity: 0;
+    visibility: hidden;
+    filter: none;
+}
+
+.app-wrapper.style-icon-cover .app-icon {
+    border: 0;
+}
+
+.app-wrapper.style-icon-cover .app-icon svg,
+.app-wrapper.style-icon-cover .app-icon svg * {
+    opacity: 0;
+    visibility: hidden;
+    fill: transparent;
+    stroke: transparent;
 }
 
 body[data-style-page-preset="compact"] .page {
@@ -3556,8 +3794,8 @@ body.style-theme-dark .desktop-component-item {
 .profile-receipt-widget {
     container-type: inline-size;
     aspect-ratio: 1213 / 429;
-    height: auto !important;
-    min-height: 0 !important;
+    height: auto;
+    min-height: 0;
     color: #202025;
     overflow: visible;
 }
@@ -3758,33 +3996,33 @@ body.style-theme-dark .desktop-component-item {
 
 /* 2026-04-24 requested single-avatar card and locked almanac polish. */
 .new-sun-card .sun-tag {
-    border: 0 !important;
-    border-radius: 999px !important;
-    background: #f2f2f3 !important;
-    box-shadow: none !important;
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
+    border: 0;
+    border-radius: 999px;
+    background: #f2f2f3;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
 }
 
 .new-sun-card .tag-icon {
-    width: 22px !important;
-    height: 22px !important;
-    border: 0 !important;
-    border-radius: 50% !important;
-    background: #050505 !important;
-    box-shadow: none !important;
-    color: #ffffff !important;
+    width: 22px;
+    height: 22px;
+    border: 0;
+    border-radius: 50%;
+    background: #050505;
+    box-shadow: none;
+    color: #ffffff;
 }
 
 .date-almanac-widget,
 .date-almanac-widget * {
-    cursor: default !important;
-    -webkit-user-select: none !important;
-    user-select: none !important;
+    cursor: default;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .date-almanac-widget [contenteditable="true"] {
-    -webkit-user-modify: read-only !important;
+    -webkit-user-modify: read-only;
 }
 
 /* Rinno paper-material pass: solid component texture without backdrop blur. */
@@ -3824,8 +4062,8 @@ body.style-theme-dark .desktop-component-item {
 .progress-heart,
 .mood-bento-pill,
 .key {
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
 }
 
 .glass-panel,
@@ -3833,10 +4071,10 @@ body.style-theme-dark .desktop-component-item {
 .desktop-component-panel,
 .info-bottom-part,
 .chat-input-bar {
-    background: var(--rinno-component-surface) !important;
-    border: var(--rinno-component-border) !important;
-    border-top: var(--rinno-component-highlight) !important;
-    box-shadow: var(--rinno-component-shadow) !important;
+    background: var(--rinno-component-surface);
+    border: var(--rinno-component-border);
+    border-top: var(--rinno-component-highlight);
+    box-shadow: var(--rinno-component-shadow);
     background-clip: padding-box;
 }
 
@@ -3860,82 +4098,322 @@ body.style-theme-dark .desktop-component-item {
 .progress-heart,
 .mood-bento-pill,
 .key {
-    background: var(--rinno-component-surface-soft) !important;
-    border: var(--rinno-component-border) !important;
-    border-top: var(--rinno-component-highlight) !important;
-    box-shadow: var(--rinno-component-shadow-soft) !important;
+    background: var(--rinno-component-surface-soft);
+    border: var(--rinno-component-border);
+    border-top: var(--rinno-component-highlight);
+    box-shadow: var(--rinno-component-shadow-soft);
     background-clip: padding-box;
 }
 
 .desktop-component-grabber {
-    background: var(--rinno-component-line) !important;
-    box-shadow: none !important;
+    background: var(--rinno-component-line);
+    box-shadow: none;
 }
 
 .desktop-component-sheet {
-    padding: 0 12px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
-    background: transparent !important;
+    padding: 0 12px calc(12px + var(--rinno-safe-area-bottom, 0px));
+    background: transparent;
 }
 
 .desktop-component-panel {
-    width: min(calc(100vw - 24px), var(--desktop-component-max-width, 450px)) !important;
-    max-width: var(--desktop-component-max-width, 450px) !important;
-    max-height: min(72dvh, 560px) !important;
-    margin: 0 auto !important;
-    border-radius: 26px !important;
-    overflow: hidden !important;
+    width: min(calc(100% - 24px), var(--desktop-component-max-width, 450px));
+    max-width: var(--desktop-component-max-width, 450px);
+    max-height: min(calc(var(--app-height) - 44px), 560px);
+    margin: 0 auto;
+    border-radius: 26px;
+    overflow: hidden;
     isolation: isolate;
 }
 
 .desktop-component-list {
-    gap: 8px !important;
-    padding: 0 12px 14px !important;
+    gap: 8px;
+    padding: 0 12px 14px;
 }
 
 .desktop-component-item {
-    min-height: 62px !important;
-    padding: 10px !important;
-    border-radius: 14px !important;
-    overflow: hidden !important;
+    min-height: 62px;
+    padding: 10px;
+    border-radius: 14px;
+    overflow: hidden;
 }
 
 .desktop-component-item:first-child {
-    border-top: var(--rinno-component-highlight) !important;
+    border-top: var(--rinno-component-highlight);
 }
 
 .desktop-component-icon {
-    border-radius: 10px !important;
+    border-radius: 10px;
 }
 
 .desktop-component-action {
-    border-radius: 999px !important;
+    border-radius: 999px;
 }
 
 .name-bubble::after {
-    border-top-color: rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.80) !important;
+    border-top-color: rgba(var(--style-glass-tint-rgb, 255, 251, 252), 0.80);
 }
 
 .avatar-overlap-wrapper {
-    background: transparent !important;
-    border: 0 !important;
+    background: transparent;
+    border: 0;
 }
 
 .key.empty,
 .key.action {
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
 }
 
 .new-sun-card .sun-tag {
-    border: 0 !important;
-    background: #f2f2f3 !important;
-    box-shadow: none !important;
+    border: 0;
+    background: #f2f2f3;
+    box-shadow: none;
 }
 
 .new-sun-card .tag-icon {
-    border: 0 !important;
-    background: #050505 !important;
-    box-shadow: none !important;
-    color: #ffffff !important;
+    border: 0;
+    background: #050505;
+    box-shadow: none;
+    color: #ffffff;
+}
+
+/* Desktop safety lock: keep dock top edge clean and keep app icons visible. */
+html body .dock.dock {
+    border-top: 0;
+}
+
+#slider > .page .app-wrapper .app-icon {
+    display: flex;
+    visibility: visible;
+    opacity: 1;
+    background-image: var(--style-app-icon-cover, none), var(--rinno-app-icon-surface);
+    background-size: contain, cover;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+}
+
+#slider > .page .app-wrapper .app-icon svg,
+#slider > .page .app-wrapper .app-icon svg * {
+    visibility: visible;
+    opacity: 1;
+}
+
+#slider > .page .app-wrapper.style-icon-cover[data-style-app-cover-ready="true"] .app-icon svg,
+#slider > .page .app-wrapper.style-icon-cover[data-style-app-cover-ready="true"] .app-icon svg * {
+    visibility: hidden;
+    opacity: 0;
+}
+
+body[data-style-icon="filled"] #slider > .page .app-wrapper .app-icon svg,
+body[data-style-icon="filled"] #slider > .page .app-wrapper .app-icon svg * {
+    stroke: currentColor;
+    stroke-width: 1.2;
+}
+
+
+
+
+/* 统一弹窗材质：遮罩半透明白，本体完全不透明。 */
+:where(.prologue-modal,.api-preset-modal,.private-terms-modal,.private-moment-modal-backdrop,.private-user-preset-modal,.private-settings-modal,.private-contact-account-modal,.private-contact-profile-modal,.private-contact-chat-confirm-modal,.private-contact-chat-edit-modal,.private-contact-chat-recall-modal,.private-contact-chat-placeholder-modal,.private-contact-chat-compose-modal,.private-sticker-modal,.private-sticker-group-modal,.dossier-modal,.dossier-profile-modal,.dossier-network-modal,.dossier-network-subject-modal,.wanye-modal,.phone-call-sheet,.assets-modal-overlay,.zhenxuan-sheet,.modal-overlay,.rinno-update-modal-mask) {
+    background: rgba(255, 255, 255, 0.66);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+:where(.prologue-dialog,.api-preset-dialog,.private-terms-dialog,.private-user-preset-dialog,.private-settings-page,.private-contact-account-dialog,.private-contact-profile-dialog,.private-contact-chat-confirm-dialog,.private-contact-chat-edit-dialog,.private-contact-chat-recall-dialog,.private-contact-chat-placeholder-dialog,.private-contact-chat-compose-dialog,.private-contact-chat-compose-shell,.private-sticker-dialog,.private-sticker-group-dialog,.dossier-editor,.dossier-profile-dialog,.dossier-network-dialog,.dossier-network-subject-dialog,.wanye-form,.phone-call-dialog,.assets-modal-card,.zhenxuan-sheet-dialog,.modal-content,.rinno-update-card) {
+    background: #fffdfd;
+    background-image: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    opacity: 1;
+}
+
+/* 真实手机更新弹窗：每个版本只出现一次 */
+.rinno-update-modal-mask {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.4rem;
+    background: rgba(255, 255, 255, .66);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    animation: rinnoUpdateMaskIn .34s ease both;
+}
+.rinno-update-card {
+    width: min(21rem, calc(100vw - 2.8rem));
+    aspect-ratio: 2 / 3;
+    border-radius: 2.2rem;
+    background: #ffffff;
+    border: 1px solid rgba(17, 17, 17, .08);
+    box-shadow: 0 1.8rem 4rem rgba(20, 24, 30, .16), inset 0 1px 0 rgba(255, 255, 255, 1);
+    padding: 1.35rem 1.25rem 1.05rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform-origin: 50% 54%;
+    animation: rinnoUpdateCardIn .52s cubic-bezier(.18,.88,.24,1) both;
+}
+.rinno-update-kicker {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: .5rem;
+    letter-spacing: .24em;
+    font-weight: 900;
+    color: rgba(17, 17, 17, .46);
+    text-transform: uppercase;
+}
+.rinno-update-card h2 {
+    margin: .42rem 0 .75rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 2.45rem;
+    line-height: .86;
+    letter-spacing: -.08em;
+    color: #111;
+}
+.rinno-update-card h2 em { font-style: italic; color: rgba(17, 17, 17, .52); }
+.rinno-update-version {
+    margin-left: auto;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: .82rem;
+    line-height: 1;
+    letter-spacing: -.02em;
+    color: rgba(17, 17, 17, .86);
+}
+.rinno-update-list {
+    display: grid;
+    gap: .58rem;
+    margin: 0;
+    padding: .85rem 0 0;
+    list-style: none;
+    border-top: 1px solid rgba(17, 17, 17, .1);
+    text-align: left;
+    flex: 1;
+    align-content: start;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-right: .18rem;
+}
+.rinno-update-list li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .42rem;
+    font-size: .72rem;
+    line-height: 1.35;
+    color: rgba(17, 17, 17, .72);
+    text-align: left;
+}
+.rinno-update-list li::before { content: "✦"; color: #111; font-size: .55rem; margin-top: .1rem; }
+.rinno-update-actions { display: flex; justify-content: flex-end; margin-top: auto; padding-top: 1.05rem; }
+.rinno-update-ok {
+    border: 0;
+    border-radius: 999px;
+    background: #111;
+    color: #fff;
+    min-height: 2.35rem;
+    padding: .3rem .34rem .3rem .9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .62rem;
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+}
+.rinno-update-arrow-circle {
+    width: 1.65rem;
+    height: 1.65rem;
+    border-radius: 50%;
+    background: #fff;
+    color: #111;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.rinno-update-arrow-circle svg { width: .9rem; height: .9rem; stroke-width: 2.2; }
+@keyframes rinnoUpdateMaskIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes rinnoUpdateCardIn {
+    from { opacity: 0; transform: translateY(22px) scale(.94); filter: blur(10px); }
+    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+
+
+
+/* v0074 全局隐藏拉杆控件：保留对应数值输入/按钮，不再显示 range 轨道。 */
+input[type="range"] {
+    display: none;
+    visibility: hidden;
+    width: 0;
+    height: 0;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+
+/* 更新弹窗长内容支持：只扩展滚动能力，不改变原有弹窗结构 */
+.rinno-update-card {
+    max-height: min(38rem, calc(100vh - 2.8rem));
+}
+.rinno-update-list {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-right: .18rem;
+}
+.rinno-update-list::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+/* v0122 更新弹窗滚动修复：让内容区真正可上下滑动，同时完全隐藏滚动条。 */
+.rinno-update-card {
+    height: min(31.5rem, calc(100dvh - 2.8rem));
+    max-height: calc(100dvh - 2.8rem);
+    overflow: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+@supports not (height: 100dvh) {
+    .rinno-update-card {
+        height: min(31.5rem, calc(100vh - 2.8rem));
+        max-height: calc(100vh - 2.8rem);
+    }
+}
+.rinno-update-kicker,
+.rinno-update-card h2,
+.rinno-update-actions {
+    flex: 0 0 auto;
+}
+.rinno-update-list {
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.rinno-update-card::-webkit-scrollbar,
+.rinno-update-list::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+    background: transparent;
+}
+.rinno-update-card::-webkit-scrollbar-thumb,
+.rinno-update-list::-webkit-scrollbar-thumb {
+    background: transparent;
 }
