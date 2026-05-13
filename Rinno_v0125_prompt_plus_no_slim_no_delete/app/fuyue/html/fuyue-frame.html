@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=overlays-content">
+    <title>赴约</title>
+    <style>
+        :root {
+            --fv-bg: var(--bg-soft-white, #fcf8f6);
+            --fv-paper: color-mix(in srgb, var(--bg-soft-white, #fcf8f6) 86%, #fff 14%);
+            --fv-card: color-mix(in srgb, var(--accent-rose-light, #f2e8e8) 72%, #fffaf4 28%);
+            --fv-card-deep: color-mix(in srgb, var(--accent-rose-gray, #d8c4c7) 45%, #f8efe8 55%);
+            --fv-ink: var(--text-ink, #241d1f);
+            --fv-muted: var(--text-ink-light, #776c6f);
+            --fv-line: color-mix(in srgb, var(--border-color, #e8dcda) 78%, var(--fv-ink) 6%);
+            --fv-gold: #b99a62;
+            --fv-cream: #fff7ed;
+            --fv-dust: color-mix(in srgb, var(--accent-rose-gray, #d6c4c8) 32%, #fff8ef 68%);
+            --fv-font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            --fv-serif: Georgia, "Times New Roman", "Songti SC", serif;
+            --fv-safe-bottom: max(env(safe-area-inset-bottom), 16px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { width: 100%; height: 100%; overflow: hidden; }
+        body { background: var(--fv-bg); color: var(--fv-ink); font-family: var(--fv-font); -webkit-font-smoothing: antialiased; }
+        button, textarea { font: inherit; }
+        button { border: 0; background: transparent; color: inherit; cursor: pointer; }
+
+        .fv-shell {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 18% 0%, color-mix(in srgb, var(--fv-card-deep) 34%, transparent) 0 28%, transparent 45%),
+                linear-gradient(180deg, color-mix(in srgb, var(--fv-bg) 92%, #fff 8%), var(--fv-bg));
+        }
+
+        .fv-page {
+            position: absolute;
+            inset: 0;
+            display: none;
+            max-width: 520px;
+            margin: 0 auto;
+            width: 100%;
+            background: transparent;
+        }
+        .fv-page.is-active { display: flex; flex-direction: column; }
+
+        .fv-home-scroll {
+            flex: 1;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: calc(34px + env(safe-area-inset-top)) 22px calc(42px + var(--fv-safe-bottom));
+        }
+
+        .fv-home-header {
+            padding: 14px 2px 24px;
+        }
+        #fuyue-home-title {
+            font-family: var(--fv-serif);
+            font-size: 42px;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            line-height: 1;
+        }
+        .fv-home-kicker {
+            margin-top: 10px;
+            font-size: 10px;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--fv-muted);
+        }
+        .fv-home-subtitle {
+            margin-top: 18px;
+            max-width: 260px;
+            color: var(--fv-muted);
+            font-size: 13px;
+            line-height: 1.9;
+            letter-spacing: 0.08em;
+        }
+
+        .fv-status-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin: 16px 0 18px;
+            padding: 12px 14px;
+            border: 1px solid var(--fv-line);
+            border-radius: 20px;
+            background: color-mix(in srgb, var(--fv-paper) 72%, transparent);
+        }
+        .fv-status-strip span:first-child {
+            font-family: var(--fv-serif);
+            font-style: italic;
+            color: var(--fv-muted);
+            font-size: 12px;
+        }
+        .fv-status-strip span:last-child {
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            color: var(--fv-gold);
+            text-transform: uppercase;
+        }
+
+        .fv-char-list { display: grid; gap: 16px; }
+        .fv-char-card {
+            position: relative;
+            display: grid;
+            grid-template-columns: 58px minmax(0, 1fr);
+            gap: 14px;
+            align-items: center;
+            min-height: 124px;
+            padding: 18px 16px;
+            border-radius: 30px;
+            background:
+                linear-gradient(135deg, color-mix(in srgb, var(--fv-card) 92%, #fff 8%), color-mix(in srgb, var(--fv-dust) 78%, #fff 22%));
+            border: 1px solid color-mix(in srgb, var(--fv-line) 86%, #fff 14%);
+            box-shadow: 0 16px 36px rgba(55, 32, 38, 0.045);
+            overflow: hidden;
+            text-align: left;
+        }
+        .fv-char-card::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            bottom: 16px;
+            left: 88px;
+            width: 1px;
+            background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--fv-gold) 34%, transparent), transparent);
+        }
+        .fv-char-card::after {
+            content: 'Rendezvous';
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            font-family: var(--fv-serif);
+            font-size: 9px;
+            letter-spacing: 0.22em;
+            color: color-mix(in srgb, var(--fv-gold) 70%, transparent);
+            text-transform: uppercase;
+        }
+        .fv-avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 22px;
+            overflow: hidden;
+            background: color-mix(in srgb, var(--fv-card-deep) 72%, #fff 28%);
+            border: 1px solid color-mix(in srgb, var(--fv-line) 80%, #fff 20%);
+            display: grid;
+            place-items: center;
+            color: var(--fv-muted);
+            font-family: var(--fv-serif);
+            font-size: 22px;
+        }
+        .fv-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .fv-char-main { min-width: 0; padding-left: 2px; }
+        .fv-char-name {
+            max-width: calc(100% - 94px);
+            font-size: 18px;
+            font-weight: 650;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .fv-char-relation {
+            margin-top: 5px;
+            color: var(--fv-muted);
+            font-size: 12px;
+            line-height: 1.55;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .fv-char-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .fv-pill {
+            display: inline-flex;
+            align-items: center;
+            max-width: 100%;
+            min-height: 24px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            border: 1px solid color-mix(in srgb, var(--fv-line) 80%, transparent);
+            background: color-mix(in srgb, var(--fv-cream) 72%, transparent);
+            color: var(--fv-muted);
+            font-size: 10px;
+            letter-spacing: 0.06em;
+        }
+        .fv-pill.is-pending {
+            color: color-mix(in srgb, var(--fv-gold) 72%, var(--fv-ink));
+            background: color-mix(in srgb, var(--fv-gold) 10%, var(--fv-cream));
+            border-color: color-mix(in srgb, var(--fv-gold) 26%, var(--fv-line));
+        }
+
+        .fv-empty {
+            display: none;
+            margin-top: 60px;
+            padding: 34px 26px;
+            border-radius: 32px;
+            border: 1px solid var(--fv-line);
+            background: color-mix(in srgb, var(--fv-paper) 78%, transparent);
+            text-align: center;
+        }
+        .fv-empty.is-visible { display: block; }
+        .fv-empty-title { font-family: var(--fv-serif); font-size: 25px; font-style: italic; }
+        .fv-empty-desc { margin-top: 10px; color: var(--fv-muted); font-size: 13px; line-height: 1.8; }
+
+        .fv-meet-header {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            gap: 12px;
+            align-items: center;
+            padding: calc(16px + env(safe-area-inset-top)) 18px 14px;
+            background: color-mix(in srgb, var(--fv-bg) 92%, transparent);
+            border-bottom: 1px solid color-mix(in srgb, var(--fv-line) 64%, transparent);
+        }
+        .fv-header-btn {
+            min-width: 48px;
+            min-height: 36px;
+            padding: 8px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--fv-line);
+            background: color-mix(in srgb, var(--fv-paper) 70%, transparent);
+            color: var(--fv-muted);
+            font-size: 11px;
+            letter-spacing: 0.13em;
+        }
+        .fv-meet-center { min-width: 0; text-align: center; }
+        .fv-meet-name {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .fv-meet-place {
+            margin-top: 4px;
+            font-size: 10px;
+            letter-spacing: 0.08em;
+            color: var(--fv-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fv-meet-scroll {
+            flex: 1;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 18px 18px 150px;
+        }
+        .fv-scene-card {
+            margin-bottom: 22px;
+            padding: 20px 18px;
+            border-radius: 32px;
+            border: 1px solid color-mix(in srgb, var(--fv-line) 84%, #fff 16%);
+            background:
+                linear-gradient(135deg, color-mix(in srgb, var(--fv-dust) 86%, #fff 14%), color-mix(in srgb, var(--fv-paper) 92%, #fff 8%));
+        }
+        .fv-scene-kicker {
+            font-family: var(--fv-serif);
+            font-size: 10px;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: var(--fv-gold);
+        }
+        .fv-scene-title { margin-top: 10px; font-size: 20px; font-weight: 700; letter-spacing: 0.06em; }
+        .fv-scene-desc { margin-top: 8px; color: var(--fv-muted); font-size: 12px; line-height: 1.8; }
+
+        .fv-message-stream { display: grid; gap: 14px; }
+        .fv-action-line {
+            width: min(92%, 388px);
+            margin: 8px auto;
+            padding: 12px 16px;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--fv-paper) 70%, transparent);
+            border: 1px solid color-mix(in srgb, var(--fv-line) 70%, transparent);
+            color: var(--fv-muted);
+            font-family: var(--fv-serif);
+            font-size: 12px;
+            line-height: 1.75;
+            text-align: center;
+            letter-spacing: 0.05em;
+        }
+        .fv-speak-wrap { display: flex; justify-content: flex-start; }
+        .fv-speak-bubble {
+            max-width: 82%;
+            padding: 12px 15px;
+            border-radius: 22px 22px 22px 8px;
+            background: color-mix(in srgb, var(--fv-card) 86%, #fff 14%);
+            border: 1px solid color-mix(in srgb, var(--fv-line) 82%, #fff 18%);
+            color: var(--fv-ink);
+            font-size: 14px;
+            line-height: 1.75;
+            letter-spacing: 0.04em;
+            box-shadow: 0 12px 28px rgba(55, 32, 38, 0.04);
+        }
+        .fv-user-wrap { display: flex; justify-content: flex-end; margin: 8px 0; }
+        .fv-user-bubble {
+            max-width: 78%;
+            padding: 11px 14px;
+            border-radius: 22px 22px 8px 22px;
+            background: color-mix(in srgb, var(--fv-ink) 88%, var(--fv-gold) 12%);
+            color: var(--fv-bg);
+            font-size: 14px;
+            line-height: 1.72;
+            letter-spacing: 0.04em;
+        }
+        .fv-time-dot {
+            margin: 16px auto 6px;
+            width: fit-content;
+            font-family: var(--fv-serif);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            color: color-mix(in srgb, var(--fv-gold) 70%, var(--fv-muted));
+            text-transform: uppercase;
+        }
+
+        .fv-composer {
+            position: fixed;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: min(100%, 520px);
+            padding: 14px 18px calc(var(--fv-safe-bottom) + 4px);
+            background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--fv-bg) 94%, transparent) 22%, var(--fv-bg) 100%);
+        }
+        .fv-composer-inner {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: end;
+            padding: 10px 10px 10px 14px;
+            border-radius: 28px;
+            background: color-mix(in srgb, var(--fv-paper) 86%, #fff 14%);
+            border: 1px solid var(--fv-line);
+            box-shadow: 0 -8px 30px rgba(54, 33, 38, 0.045);
+        }
+        .fv-input {
+            width: 100%;
+            max-height: 120px;
+            min-height: 38px;
+            resize: none;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: var(--fv-ink);
+            font-size: 14px;
+            line-height: 1.65;
+            padding: 7px 0;
+        }
+        .fv-input::placeholder { color: color-mix(in srgb, var(--fv-muted) 70%, transparent); }
+        .fv-send {
+            min-width: 58px;
+            min-height: 38px;
+            border-radius: 999px;
+            background: var(--fv-ink);
+            color: var(--fv-bg);
+            font-size: 12px;
+            letter-spacing: 0.12em;
+        }
+        .fv-send:disabled { opacity: 0.46; }
+
+        .fv-toast {
+            position: fixed;
+            left: 50%;
+            bottom: calc(var(--fv-safe-bottom) + 86px);
+            transform: translateX(-50%) translateY(12px);
+            max-width: min(86vw, 360px);
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--fv-ink) 88%, transparent);
+            color: var(--fv-bg);
+            font-size: 12px;
+            line-height: 1.5;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .22s ease, transform .22s ease;
+            z-index: 20;
+            text-align: center;
+        }
+        .fv-toast.is-visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 390px) {
+            .fv-home-scroll { padding-left: 16px; padding-right: 16px; }
+            .fv-char-card { grid-template-columns: 52px minmax(0, 1fr); padding: 16px 14px; border-radius: 26px; }
+            .fv-avatar { width: 52px; height: 52px; border-radius: 19px; }
+            .fv-char-card::before { left: 78px; }
+            #fuyue-home-title { font-size: 38px; }
+        }
+    </style>
+</head>
+<body>
+    <main class="fv-shell" aria-live="polite">
+        <section id="fv-home" class="fv-page is-active">
+            <div class="fv-home-scroll">
+                <header class="fv-home-header">
+                    <div id="fuyue-home-title">赴约</div>
+                    <div class="fv-home-kicker">Private Rendezvous</div>
+                    <p class="fv-home-subtitle">选择一个想见的人。未完成的邀约会被轻轻收在这里，也可以由你主动赴约。</p>
+                </header>
+                <div class="fv-status-strip"><span>Today’s appointment</span><span id="fv-home-status">读取中</span></div>
+                <div id="fv-char-list" class="fv-char-list"></div>
+                <div id="fv-empty" class="fv-empty">
+                    <div class="fv-empty-title">还没有可以赴约的人</div>
+                    <div class="fv-empty-desc">先在私叙里添加联系人，之后这里会出现可以选择的见面对象。</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="fv-meeting" class="fv-page">
+            <header class="fv-meet-header">
+                <button class="fv-header-btn" id="fv-back" type="button">返回</button>
+                <div class="fv-meet-center">
+                    <div id="fv-meet-name" class="fv-meet-name">赴约中</div>
+                    <div id="fv-meet-place" class="fv-meet-place">地点生成中</div>
+                </div>
+                <button class="fv-header-btn" id="fv-end" type="button">结束</button>
+            </header>
+            <div id="fv-meet-scroll" class="fv-meet-scroll">
+                <section class="fv-scene-card">
+                    <div class="fv-scene-kicker" id="fv-scene-kicker">MEETING</div>
+                    <div class="fv-scene-title" id="fv-scene-title">正在准备见面</div>
+                    <div class="fv-scene-desc" id="fv-scene-desc">这里会根据邀约或角色记忆生成合适的时间、地点和氛围。</div>
+                </section>
+                <div class="fv-time-dot" id="fv-time-dot">RENDEZVOUS</div>
+                <div id="fv-message-stream" class="fv-message-stream"></div>
+            </div>
+            <form class="fv-composer" id="fv-form">
+                <div class="fv-composer-inner">
+                    <textarea id="fv-input" class="fv-input" rows="1" placeholder="说句话，或写下你的动作……"></textarea>
+                    <button id="fv-send" class="fv-send" type="submit">发送</button>
+                </div>
+            </form>
+        </section>
+    </main>
+    <div id="fv-toast" class="fv-toast"></div>
+
+    <script>
+        (() => {
+            'use strict';
+
+            const $ = selector => document.querySelector(selector);
+            const state = {
+                contacts: [],
+                activeContact: null,
+                activeSession: null,
+                messages: [],
+                pendingLaunch: null,
+                sending: false,
+                ended: false
+            };
+
+            const el = {
+                home: $('#fv-home'),
+                meeting: $('#fv-meeting'),
+                list: $('#fv-char-list'),
+                empty: $('#fv-empty'),
+                homeStatus: $('#fv-home-status'),
+                back: $('#fv-back'),
+                end: $('#fv-end'),
+                meetName: $('#fv-meet-name'),
+                meetPlace: $('#fv-meet-place'),
+                sceneKicker: $('#fv-scene-kicker'),
+                sceneTitle: $('#fv-scene-title'),
+                sceneDesc: $('#fv-scene-desc'),
+                timeDot: $('#fv-time-dot'),
+                stream: $('#fv-message-stream'),
+                scroll: $('#fv-meet-scroll'),
+                form: $('#fv-form'),
+                input: $('#fv-input'),
+                send: $('#fv-send'),
+                toast: $('#fv-toast')
+            };
+
+            function callParent(name, payload) {
+                try {
+                    const fn = window.parent && window.parent[name];
+                    if (typeof fn === 'function') return Promise.resolve(fn.call(window.parent, payload));
+                } catch (error) {
+                    console.warn('赴约 APP 调用主页面失败:', name, error);
+                }
+                return Promise.resolve(null);
+            }
+
+            function escapeHtml(value) {
+                return String(value ?? '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+            }
+
+            function text(value, fallback = '') {
+                const output = String(value ?? '').trim();
+                return output || fallback;
+            }
+
+            function getInitial(name) {
+                const clean = text(name, '赴');
+                return Array.from(clean)[0] || '赴';
+            }
+
+            function normalizeInvite(raw) {
+                if (!raw || typeof raw !== 'object') return null;
+                const place = raw.place && typeof raw.place === 'object' ? raw.place : {};
+                const time = raw.time && typeof raw.time === 'object' ? raw.time : {};
+                return {
+                    inviteId: text(raw.inviteId),
+                    charId: text(raw.charId),
+                    title: text(raw.title, '线下见面邀约'),
+                    status: text(raw.status, 'pending'),
+                    timeText: text(time.text || raw.timeText, '今天稍晚'),
+                    placeName: text(place.name || raw.placeName, '约好的地方'),
+                    placeAddress: text(place.address || raw.placeAddress),
+                    atmosphere: text(place.atmosphere || raw.atmosphere),
+                    reason: text(raw.reason)
+                };
+            }
+
+            function normalizeContact(raw) {
+                if (!raw || typeof raw !== 'object') return null;
+                const pendingInvite = normalizeInvite(raw.pendingInvite);
+                return {
+                    id: text(raw.id || raw.charId),
+                    name: text(raw.name || raw.title || raw.nickname, '未命名'),
+                    avatar: text(raw.avatar),
+                    relationStatus: text(raw.relationStatus || raw.signature || raw.subtitle, '关系正在慢慢变清晰'),
+                    lastMeetingText: text(raw.lastMeetingText, '还没有线下见面记录'),
+                    pendingInvite
+                };
+            }
+
+            function normalizePayload(payload) {
+                let source = payload;
+                if (typeof source === 'string') {
+                    const stripped = source.replace(/^```(?:json)?\s*/i, '').replace(/```$/i, '').trim();
+                    try { source = JSON.parse(stripped); } catch (error) { source = []; }
+                }
+                if (!Array.isArray(source)) source = [];
+                return source.map(item => {
+                    if (!item || typeof item !== 'object') return null;
+                    const type = item.type === 'speak' ? 'speak' : 'action';
+                    let content = text(item.content);
+                    if (!content) return null;
+                    if (type === 'speak' && !/^“.*”$/.test(content)) {
+                        content = '“' + content.replace(/^[“”"']+|[“”"']+$/g, '') + '”';
+                    }
+                    return { type, content };
+                }).filter(Boolean);
+            }
+
+            function showPage(name) {
+                el.home.classList.toggle('is-active', name === 'home');
+                el.meeting.classList.toggle('is-active', name === 'meeting');
+                if (name === 'home') {
+                    setTimeout(() => el.home.querySelector('.fv-home-scroll')?.scrollTo({ top: 0 }), 0);
+                } else {
+                    scrollBottom(false);
+                }
+            }
+
+            let toastTimer = 0;
+            function showToast(message) {
+                clearTimeout(toastTimer);
+                el.toast.textContent = message;
+                el.toast.classList.add('is-visible');
+                toastTimer = setTimeout(() => el.toast.classList.remove('is-visible'), 1800);
+            }
+
+            function renderHome() {
+                const rows = state.contacts;
+                el.homeStatus.textContent = rows.length ? `${rows.length} 位可赴约` : '空状态';
+                el.empty.classList.toggle('is-visible', !rows.length);
+                el.list.innerHTML = rows.map(contact => {
+                    const invite = contact.pendingInvite;
+                    const avatar = contact.avatar
+                        ? `<img src="${escapeHtml(contact.avatar)}" alt="${escapeHtml(contact.name)}">`
+                        : `<span>${escapeHtml(getInitial(contact.name))}</span>`;
+                    const invitePill = invite && invite.status === 'pending'
+                        ? `<span class="fv-pill is-pending">待接受 · ${escapeHtml(invite.timeText)} · ${escapeHtml(invite.placeName)}</span>`
+                        : '<span class="fv-pill">可主动赴约</span>';
+                    return `
+                        <button class="fv-char-card" type="button" data-char-id="${escapeHtml(contact.id)}">
+                            <span class="fv-avatar">${avatar}</span>
+                            <span class="fv-char-main">
+                                <span class="fv-char-name">${escapeHtml(contact.name)}</span>
+                                <span class="fv-char-relation">${escapeHtml(contact.relationStatus)}</span>
+                                <span class="fv-char-meta">
+                                    <span class="fv-pill">${escapeHtml(contact.lastMeetingText)}</span>
+                                    ${invitePill}
+                                </span>
+                            </span>
+                        </button>`;
+                }).join('');
+            }
+
+            async function loadContacts() {
+                el.homeStatus.textContent = '读取中';
+                const result = await callParent('rinnoOfflineListContacts');
+                state.contacts = Array.isArray(result) ? result.map(normalizeContact).filter(item => item && item.id) : [];
+                renderHome();
+                return state.contacts;
+            }
+
+            function contactById(charId) {
+                return state.contacts.find(item => item.id === charId) || null;
+            }
+
+            function sessionPlaceLine(session) {
+                const place = session?.place || {};
+                const name = text(place.name || session?.placeName, '约好的地方');
+                const timeText = text(session?.timeText, '此刻');
+                return `${timeText} · ${name}`;
+            }
+
+            function updateMeetingChrome() {
+                const contact = state.activeContact || {};
+                const session = state.activeSession || {};
+                const place = session.place || {};
+                const placeName = text(place.name, '约好的地方');
+                el.meetName.textContent = contact.name || '赴约中';
+                el.meetPlace.textContent = sessionPlaceLine(session);
+                el.sceneTitle.textContent = placeName;
+                el.sceneDesc.textContent = text(place.atmosphere || place.address, '这次见面会把线上未说完的话，放进真实的距离和停顿里。');
+                el.sceneKicker.textContent = session.source === 'chat_auto' ? 'ACCEPTED INVITATION' : 'USER RENDEZVOUS';
+                el.timeDot.textContent = text(session.timeText, 'RENDEZVOUS');
+            }
+
+            function renderMessage(message) {
+                if (!message || typeof message !== 'object') return '';
+                if (message.role === 'user') {
+                    const raw = text(message.content || normalizePayload(message.payload).map(part => part.content).join(' '));
+                    const clean = raw.replace(/^[“”"']+|[“”"']+$/g, '');
+                    return `<div class="fv-user-wrap"><div class="fv-user-bubble">${escapeHtml(clean)}</div></div>`;
+                }
+                const payload = normalizePayload(message.payload);
+                return payload.map(part => {
+                    if (part.type === 'speak') {
+                        return `<div class="fv-speak-wrap"><div class="fv-speak-bubble">${escapeHtml(part.content)}</div></div>`;
+                    }
+                    return `<div class="fv-action-line">${escapeHtml(part.content)}</div>`;
+                }).join('');
+            }
+
+            function renderMessages(messages) {
+                state.messages = Array.isArray(messages) ? messages : [];
+                el.stream.innerHTML = state.messages.map(renderMessage).join('');
+                scrollBottom();
+            }
+
+            function scrollBottom(smooth = true) {
+                setTimeout(() => {
+                    try { el.scroll.scrollTo({ top: el.scroll.scrollHeight, behavior: smooth ? 'smooth' : 'auto' }); }
+                    catch (error) { el.scroll.scrollTop = el.scroll.scrollHeight; }
+                }, 30);
+            }
+
+            async function startMeetingForContact(contact, invite) {
+                if (!contact?.id || state.sending) return;
+                state.sending = true;
+                el.send.disabled = true;
+                showToast(invite ? '正在打开这张邀约。' : '正在准备适合你们的地点。');
+                const result = await callParent('rinnoOfflineStartSession', {
+                    charId: contact.id,
+                    inviteId: invite?.inviteId || '',
+                    source: invite ? 'chat_auto' : 'user_app'
+                });
+                state.sending = false;
+                el.send.disabled = false;
+                if (!result || result.ok === false) {
+                    showToast(text(result?.message, '无法进入见面场景。'));
+                    return;
+                }
+                state.activeContact = normalizeContact(result.contact) || contact;
+                state.activeSession = result.session || null;
+                state.ended = false;
+                updateMeetingChrome();
+                renderMessages(result.messages || []);
+                showPage('meeting');
+            }
+
+            async function handleLaunchIntent(intent) {
+                if (!intent || typeof intent !== 'object') return;
+                state.pendingLaunch = intent;
+                if (!state.contacts.length) await loadContacts();
+                const contact = contactById(text(intent.charId));
+                if (!contact) return;
+                const invite = contact.pendingInvite && (!intent.inviteId || contact.pendingInvite.inviteId === intent.inviteId)
+                    ? contact.pendingInvite
+                    : { inviteId: text(intent.inviteId), status: 'pending' };
+                await startMeetingForContact(contact, invite);
+                await callParent('rinnoOfflineClearLaunchIntent');
+            }
+
+            async function sendTurn(content) {
+                const sessionId = text(state.activeSession?.sessionId);
+                if (!sessionId || state.sending || state.ended) return;
+                state.sending = true;
+                el.send.disabled = true;
+                const optimistic = { role: 'user', content, createdAt: Date.now() };
+                renderMessages([...(state.messages || []), optimistic]);
+                const result = await callParent('rinnoOfflineSendUserTurn', { sessionId, content });
+                state.sending = false;
+                el.send.disabled = false;
+                if (!result || result.ok === false) {
+                    showToast(text(result?.message, '这轮见面没有生成成功。'));
+                    renderMessages(state.messages.filter(item => item !== optimistic));
+                    return;
+                }
+                renderMessages(result.messages || [...state.messages, result.message].filter(Boolean));
+            }
+
+            async function endMeeting() {
+                const sessionId = text(state.activeSession?.sessionId);
+                if (!sessionId || state.ended) {
+                    showPage('home');
+                    return;
+                }
+                state.ended = true;
+                el.send.disabled = true;
+                const result = await callParent('rinnoOfflineEndSession', { sessionId });
+                if (!result || result.ok === false) {
+                    showToast(text(result?.message, '见面结束记录没有写入成功。'));
+                    el.send.disabled = false;
+                    state.ended = false;
+                    return;
+                }
+                showToast('见面摘要已写入拾光。');
+                await loadContacts();
+                showPage('home');
+                state.activeSession = null;
+                state.activeContact = null;
+                state.messages = [];
+                el.send.disabled = false;
+            }
+
+            el.list.addEventListener('click', event => {
+                const card = event.target.closest('[data-char-id]');
+                if (!card) return;
+                const contact = contactById(card.getAttribute('data-char-id'));
+                if (!contact) return;
+                const invite = contact.pendingInvite && contact.pendingInvite.status === 'pending' ? contact.pendingInvite : null;
+                void startMeetingForContact(contact, invite);
+            });
+
+            el.form.addEventListener('submit', event => {
+                event.preventDefault();
+                const value = text(el.input.value);
+                if (!value) return;
+                el.input.value = '';
+                el.input.style.height = 'auto';
+                void sendTurn(value);
+            });
+
+            el.input.addEventListener('input', () => {
+                el.input.style.height = 'auto';
+                el.input.style.height = Math.min(el.input.scrollHeight, 120) + 'px';
+            });
+
+            el.back.addEventListener('click', () => showPage('home'));
+            el.end.addEventListener('click', () => void endMeeting());
+
+            window.addEventListener('message', event => {
+                const data = event.data || {};
+                if (data.type === 'RINNO_FUYUE_LAUNCH') void handleLaunchIntent(data.payload || {});
+            });
+
+            async function init() {
+                await loadContacts();
+                const launchIntent = await callParent('rinnoOfflineGetLaunchIntent');
+                if (launchIntent) await handleLaunchIntent(launchIntent);
+            }
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
+            else void init();
+        })();
+    </script>
+</body>
+</html>
