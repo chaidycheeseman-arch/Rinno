@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=overlays-content">
+    <title>回响 - Echo</title>
+    <style>
+        /* ================= 基础规范与色彩体系 ================= */
+        :root {
+            --app-height: 100%;
+            --font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            --font-serif: "Times New Roman", "Songti SC", Georgia, serif;
+            
+            /* 暖玫瑰灰、柔白、墨色系，不偏黄 */
+            --page-bg: #ecebee;
+            --text-main: #2b2b30;
+            --text-sub: #7a7a85;
+            --style-accent: #d9b7c0;
+            --style-accent-strong: #8d6e7b;
+            --style-accent-soft: #f6eef1;
+            --style-page-surface: #fffbfc;
+            
+            /* 回响统一为纸面材质：不使用玻璃模糊、不做透明叠层 */
+            --rinno-component-surface: linear-gradient(180deg, #fffdfd 0%, #fbf5f7 100%);
+            --rinno-component-surface-soft: linear-gradient(180deg, #fffafa 0%, #f8f1f4 100%);
+            --rinno-component-border: 1px solid rgba(88, 55, 68, 0.10);
+            --rinno-component-shadow: 0 10px 22px rgba(88, 55, 68, 0.045);
+            --rinno-component-shadow-soft: 0 5px 12px rgba(88, 55, 68, 0.028);
+            --rinno-component-highlight: 1px solid #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            min-height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--style-page-surface);
+            background-image: linear-gradient(180deg, #fffbfc 0%, #ecebee 56%, #fffbfc 100%);
+            font-family: var(--font-family);
+            color: var(--text-main);
+            height: var(--app-height);
+            display: flex;
+            justify-content: center;
+        }
+
+        button, input, textarea { font-family: inherit; }
+        
+        [contenteditable="true"] { 
+            outline: none; -webkit-user-select: text; user-select: text; cursor: text; 
+        }
+        [contenteditable="true"]:empty::before { 
+            content: attr(placeholder); color: rgba(136, 102, 115, 0.4); 
+        }
+
+        .interactive { transition: transform 0.15s ease, filter 0.15s ease; cursor: pointer; }
+        .interactive:active { opacity: 0.84; filter: brightness(0.97); }
+
+        /* ================= 页面主容器 ================= */
+        #app-root {
+            width: 100%;
+            height: 100%;
+        }
+
+        .echo-app {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: transparent;
+        }
+
+        /* 顶部 Header */
+        .echo-top {
+            padding: 65px 24px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-shrink: 0;
+            background: linear-gradient(to bottom, #fffbfc 60%, transparent);
+            z-index: 10;
+        }
+
+        .echo-heading { display: flex; flex-direction: column; gap: 6px; }
+        
+        .echo-kicker {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--style-accent-strong);
+            font-family: var(--font-serif);
+        }
+        
+        .echo-title {
+            font-size: 26px;
+            font-weight: 500;
+            color: var(--text-main);
+            letter-spacing: 2px;
+        }
+        
+        .echo-note {
+            font-size: 12px;
+            color: var(--text-sub);
+            font-family: var(--font-serif);
+        }
+
+        /* 滚动内容区 */
+        .echo-stage {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0 20px calc(110px + env(safe-area-inset-bottom, 0px));
+            scrollbar-width: none;
+        }
+        .echo-stage::-webkit-scrollbar { display: none; }
+
+        .echo-page {
+            display: none;
+            flex-direction: column;
+            gap: 32px;
+            animation: fadeIn 0.3s ease;
+        }
+        .echo-page.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 底部导航栏 */
+        .echo-tabs {
+            position: absolute;
+            bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            gap: 16px;
+            padding: 8px 16px;
+            width: max-content;
+            border-radius: 999px;
+            background: var(--rinno-component-surface);
+            border: var(--rinno-component-border);
+            border-top: var(--rinno-component-highlight);
+            box-shadow: var(--rinno-component-shadow);
+            z-index: 100;
+        }
+
+        .echo-tab {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 24px;
+            border-radius: 999px;
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+        }
+        
+        .echo-tab svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+        
+        .echo-tab.active {
+            background: var(--style-accent-soft);
+            color: var(--style-accent-strong);
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.8);
+        }
+
+        /* 公共模块标题 */
+        .echo-section-title {
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .echo-section-title h3 {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+        .echo-section-title span {
+            font-size: 10px;
+            color: var(--style-accent-strong);
+            font-family: var(--font-serif);
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        .paper-card {
+            background: var(--rinno-component-surface);
+            border: var(--rinno-component-border);
+            border-top: var(--rinno-component-highlight);
+            box-shadow: var(--rinno-component-shadow-soft);
+            border-radius: 20px;
+            padding: 18px;
+        }
+
+        /* ================= 页面 1：发现 (Discover) ================= */
+        .editorial-hero {
+            position: relative;
+            height: 260px;
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 24px;
+            color: #fff;
+            box-shadow: 0 16px 32px rgba(88,55,68,0.12);
+        }
+        .editorial-hero-bg {
+            position: absolute; inset: 0; z-index: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="400" height="400" fill="%238d6e7b"/><circle cx="100" cy="100" r="180" fill="%23a0838f" opacity="0.4"/><circle cx="300" cy="300" r="220" fill="%23684d58" opacity="0.5"/></svg>') center/cover;
+        }
+        .editorial-hero-overlay {
+            position: absolute; inset: 0; z-index: 1;
+            background: linear-gradient(to bottom, transparent 30%, rgba(30,25,28,0.85) 100%);
+        }
+        .editorial-hero-content { position: relative; z-index: 2; }
+        .editorial-hero-kicker { font-size: 10px; letter-spacing: 3px; font-family: var(--font-serif); margin-bottom: 8px; display: block; opacity: 0.8; }
+        .editorial-hero-title { font-size: 26px; font-weight: 500; margin-bottom: 8px; letter-spacing: 1px; font-family: var(--font-serif); }
+        .editorial-hero-desc { font-size: 13px; opacity: 0.8; line-height: 1.4; }
+
+        .add-music-btn {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: var(--style-accent-soft);
+            color: var(--style-accent-strong);
+            border: var(--rinno-component-border);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .add-music-btn svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+        .track-list { display: flex; flex-direction: column; gap: 12px; }
+        .track-item {
+            display: flex; align-items: center; gap: 14px;
+            padding: 12px; border-radius: 16px;
+            background: var(--rinno-component-surface-soft);
+            border: var(--rinno-component-border);
+        }
+        .track-cover {
+            width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+            background-size: cover; background-position: center;
+        }
+        .track-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+        .track-name { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); }
+        .track-artist { font-size: 12px; color: var(--text-sub); font-family: var(--font-serif); }
+        .track-play { 
+            width: 36px; height: 36px; border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center;
+            background: var(--style-page-surface); border: var(--rinno-component-border); color: var(--style-accent-strong);
+            box-shadow: 0 4px 10px rgba(88,55,68,0.05);
+        }
+        .track-play svg { width: 14px; height: 14px; fill: currentColor; margin-left: 2px;}
+
+        /* ================= 页面 2：写歌 (Studio) ================= */
+        .desk-paper {
+            background-image: repeating-linear-gradient(transparent, transparent 27px, rgba(141, 110, 123, 0.08) 28px);
+            background-attachment: local;
+            background-position: 0 4px;
+        }
+        .desk-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(88,55,68,0.1); padding-bottom: 16px;}
+        .desk-title-input {
+            font-size: 20px; font-weight: 500; color: var(--text-main); font-family: var(--font-serif);
+        }
+        .desk-status {
+            font-size: 10px; color: var(--style-accent-strong); background: var(--style-accent-soft); padding: 4px 10px; border-radius: 999px; font-family: var(--font-serif);
+            white-space: nowrap; letter-spacing: 1px;
+        }
+        .desk-lyrics {
+            font-size: 14px; line-height: 28px; color: var(--text-sub); min-height: 160px; font-family: var(--font-serif);
+        }
+        .desk-actions {
+            margin-top: 24px; display: flex; gap: 12px;
+        }
+        .btn-primary {
+            flex: 1; padding: 14px; border-radius: 14px; background: var(--style-accent-strong); color: #fff; text-align: center;
+            font-size: 13px; font-weight: 500; border: none; box-shadow: 0 6px 16px rgba(141,110,123,0.25);
+        }
+        .btn-outline {
+            flex: 1; padding: 14px; border-radius: 14px; background: transparent; color: var(--style-accent-strong); text-align: center;
+            font-size: 13px; font-weight: 500; border: 1px solid var(--style-accent-strong);
+        }
+        
+        .published-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .pub-card {
+            background: var(--rinno-component-surface); border: var(--rinno-component-border); border-radius: 20px; padding: 16px 12px;
+            display: flex; flex-direction: column; gap: 10px; box-shadow: var(--rinno-component-shadow-soft);
+        }
+        .pub-vinyl {
+            width: 80%; margin: 0 auto; aspect-ratio: 1; border-radius: 50%; background: #1f1f22; position: relative;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15); display: flex; justify-content: center; align-items: center;
+        }
+        .pub-vinyl::before { content: ''; position: absolute; inset: 4px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.05); }
+        .pub-vinyl::after { content: ''; position: absolute; inset: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.05); }
+        .pub-center { width: 35%; height: 35%; border-radius: 50%; border: 2px solid #1f1f22; position: relative; z-index: 2;}
+        .pub-title { font-size: 14px; font-weight: 500; text-align: center; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-serif);}
+        .pub-date { font-size: 10px; color: var(--text-sub); text-align: center; font-family: var(--font-serif);}
+
+        /* ================= 页面 3：个人 (Profile) ================= */
+        .profile-header {
+            position: relative;
+            margin-top: -20px;
+            margin-left: -20px;
+            margin-right: -20px;
+            margin-bottom: 56px;
+        }
+        .profile-cover {
+            height: 200px; background: #cfc5cb; position: relative;
+            background-size: cover; background-position: center;
+        }
+        .profile-cover-btn {
+            position: absolute; right: 20px; top: 20px; background: rgba(255,255,255,0.9); border: none; padding: 8px 14px; border-radius: 999px;
+            font-size: 11px; color: var(--text-main); font-family: var(--font-serif); letter-spacing: 1px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .profile-avatar-wrap {
+            position: absolute; bottom: -42px; left: 24px;
+            width: 84px; height: 84px; border-radius: 50%;
+        }
+        .profile-avatar {
+            width: 100%; height: 100%; border-radius: 50%; background: #e2d5da;
+            background-size: cover; background-position: center; border: none;
+        }
+        .profile-avatar-edit {
+            position: absolute; bottom: 0; right: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--style-accent-strong);
+            display: flex; justify-content: center; align-items: center; color: #fff; border: 2px solid var(--style-page-surface);
+        }
+        .profile-avatar-edit svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; }
+        
+        .profile-info { padding: 0 4px; display: flex; flex-direction: column; gap: 6px; }
+        .profile-name { font-size: 24px; font-weight: 500; font-family: var(--font-serif);}
+        .profile-id { font-size: 12px; color: var(--text-sub); font-family: var(--font-serif); }
+        .profile-bio { font-size: 13px; color: var(--text-main); line-height: 1.6; margin-top: 8px; padding-bottom: 20px; border-bottom: 1px dashed rgba(88,55,68,0.2); }
+        
+        .profile-stats { display: flex; justify-content: space-around; padding: 20px 0; }
+        .stat-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .stat-num { font-size: 20px; font-weight: 600; font-family: var(--font-serif); color: var(--text-main); }
+        .stat-label { font-size: 10px; color: var(--style-accent-strong); letter-spacing: 1px; text-transform: uppercase; }
+
+        .settings-list { display: flex; flex-direction: column; gap: 12px; }
+        .settings-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 20px; border-radius: 16px; background: var(--rinno-component-surface-soft);
+            border: var(--rinno-component-border); font-size: 14px; font-weight: 500;
+        }
+        .settings-row svg { width: 16px; height: 16px; stroke: var(--text-sub); fill: none; stroke-width: 2; }
+
+        /* ================= 弹窗样式 (Add Music Modal) ================= */
+        .modal-overlay {
+            position: fixed; inset: 0; background: #fffbfc;
+            z-index: 1000; display: none; justify-content: center; align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.18s ease; }
+        .modal-content {
+            width: 100%; max-width: 380px; max-height: 85vh; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 18px;
+            scrollbar-width: none;
+            background: #fffdfd;
+        }
+        .modal-content::-webkit-scrollbar { display: none; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(88,55,68,0.1); padding-bottom: 12px;}
+        .modal-title { font-size: 18px; font-weight: 500; color: var(--text-main); font-family: var(--font-serif); }
+        .modal-close { background: none; border: none; color: var(--text-sub); display: flex; justify-content: center; align-items: center;}
+        .modal-close svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.5; fill: none;}
+        
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 12px; color: var(--text-sub); font-family: var(--font-serif); }
+        .form-input, .form-textarea {
+            width: 100%; padding: 14px; border-radius: 12px;
+            background: #fffdfd;
+            border: var(--rinno-component-border);
+            color: var(--text-main); font-size: 14px;
+            box-shadow: inset 0 1px 0 #ffffff;
+        }
+        .form-input:focus, .form-textarea:focus { border-color: var(--style-accent-strong); outline: none; }
+        .form-textarea { min-height: 100px; resize: none; line-height: 1.5; }
+        .form-row { display: flex; gap: 10px; align-items: center; }
+        .form-row.wrap { flex-wrap: wrap; }
+        .file-choice-row {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px; border-radius: 14px;
+            background: #fffafa;
+            border: var(--rinno-component-border);
+        }
+        .file-choice-name {
+            min-width: 0; flex: 1; color: var(--text-sub);
+            font-size: 12px; line-height: 1.35;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .native-file-input { display: none; }
+        .file-upload-btn {
+            flex-shrink: 0; padding: 10px 14px; border-radius: 999px; font-size: 13px;
+            background: #f6eef1; color: var(--style-accent-strong);
+            border: 1px solid rgba(88, 55, 68, 0.12); white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(88,55,68,0.035);
+        }
+        .file-upload-btn:active { transform: scale(0.98); }
+        
+        .modal-actions { display: flex; gap: 12px; margin-top: 10px; }
+
+
+        /* 2026-05-12 回响：自添加曲库 + 系统音乐检索 */
+        button { font-family: inherit; cursor: pointer; }
+        .track-list.is-empty {
+            padding: 18px;
+            border-radius: 18px;
+            border: 1px dashed rgba(88,55,68,0.18);
+            background: #fffafa;
+            color: var(--text-sub);
+            font-size: 13px;
+            line-height: 1.7;
+            font-family: var(--font-serif);
+        }
+        .track-meta-line { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+        .track-source-pill {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 7px; border-radius: 999px;
+            background: rgba(141,110,123,0.10); color: var(--style-accent-strong);
+            font-size: 9px; letter-spacing: .8px; text-transform: uppercase;
+        }
+        .track-delete {
+            width: 30px; height: 30px; border-radius: 999px;
+            border: var(--rinno-component-border);
+            background: #fffdfd; color: var(--text-sub);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .track-delete svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+        .echo-player {
+            position: sticky; bottom: 92px; z-index: 80;
+            display: grid; grid-template-columns: 54px 1fr 42px; gap: 12px; align-items: center;
+            margin-top: -6px;
+        }
+        .echo-player[hidden] { display: none ; }
+        .echo-player-cover { width: 54px; height: 54px; border-radius: 16px; background-size: cover; background-position: center; background-color: #d8cbd1; }
+        .echo-player-copy { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+        .echo-player-title { font-size: 14px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .echo-player-artist { font-size: 11px; color: var(--text-sub); font-family: var(--font-serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .echo-progress { height: 4px; border-radius: 999px; background: rgba(88,55,68,0.10); overflow: hidden; }
+        .echo-progress-fill { display: block; width: 0%; height: 100%; border-radius: inherit; background: var(--style-accent-strong); }
+        .echo-player-toggle { width: 42px; height: 42px; border: none; border-radius: 50%; background: var(--style-accent-strong); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 18px rgba(141,110,123,0.22); }
+        .echo-player-toggle svg { width: 17px; height: 17px; fill: currentColor; }
+        .ios-music-search-card {
+            border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 10px;
+            background: linear-gradient(135deg, #fffdfd 0%, #f8f1f4 100%);
+            border: 1px solid rgba(88,55,68,0.10);
+            box-shadow: inset 0 1px 0 #ffffff;
+        }
+        .ios-music-search-head { display: flex; flex-direction: column; gap: 2px; }
+        .ios-music-search-head strong { font-size: 13px; color: var(--text-main); }
+        .ios-music-search-head small { font-size: 11px; color: var(--text-sub); line-height: 1.5; }
+        .ios-search-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+        .ios-search-results { display: none; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; padding-right: 2px; }
+        .ios-search-results.active { display: flex; }
+        .ios-search-state { padding: 16px 10px; color: var(--text-sub); font-size: 12px; text-align: center; font-family: var(--font-serif); }
+        .ios-result-item { display: grid; grid-template-columns: 46px 1fr auto; gap: 10px; align-items: center; padding: 10px; border-radius: 14px; background: #fffdfd; border: 1px solid rgba(88,55,68,0.08); }
+        .ios-result-cover { width: 46px; height: 46px; border-radius: 12px; background-size: cover; background-position: center; background-color: #e0d4da; }
+        .ios-result-copy { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+        .ios-result-title { font-size: 13px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ios-result-artist { font-size: 11px; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ios-import-btn { padding: 8px 10px; border-radius: 999px; border: 1px solid rgba(88,55,68,0.12); background: var(--style-accent-soft); color: var(--style-accent-strong); font-size: 12px; white-space: nowrap; }
+        .source-helper { margin-top: -2px; color: var(--text-sub); font-size: 11px; line-height: 1.55; font-family: var(--font-serif); }
+        .echo-toast {
+            position: fixed; left: 50%; bottom: calc(118px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(12px);
+            max-width: min(320px, calc(100vw - 48px)); padding: 10px 14px; border-radius: 999px;
+            background: rgba(44,35,39,0.92); color: #fff; font-size: 12px; z-index: 2000;
+            opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease;
+            box-shadow: 0 10px 28px rgba(44,35,39,0.22);
+        }
+        .echo-toast.active { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    </style>
+</head>
+<body>
+    <div id="app-root">
+        <section class="echo-app" id="echo-app">
+            
+            <header class="echo-top">
+                <div class="echo-heading">
+                    <span class="echo-kicker">ECHO MUSIC</span>
+                    <h1 class="echo-title">回响</h1>
+                    <p class="echo-note">声波、韵律与共同写下的歌。</p>
+                </div>
+            </header>
+
+            <main class="echo-stage">
+                
+                <section class="echo-page active" data-echo-page="discover">
+                    <div class="editorial-hero interactive">
+                        <div class="editorial-hero-bg"></div>
+                        <div class="editorial-hero-overlay"></div>
+                        <div class="editorial-hero-content">
+                            <span class="editorial-hero-kicker">EDITORIAL PICK</span>
+                            <h2 class="editorial-hero-title">玫瑰色回声</h2>
+                            <p class="editorial-hero-desc">在安静的午后，适合搭配微雨阅读的轻奢选曲。</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="echo-section-title" style="align-items: center;">
+                            <div style="display: flex; align-items: baseline; gap: 8px;">
+                                <h3>新歌速递</h3>
+                                <span>NEW RELEASES</span>
+                            </div>
+                            <button type="button" class="add-music-btn interactive" id="openAddMusicModal">
+                                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            </button>
+                        </div>
+                        <div class="track-list" id="echoTrackList" aria-live="polite"></div>
+                        <div class="echo-player paper-card" id="echoPlayer" hidden>
+                            <div class="echo-player-cover" id="echoPlayerCover"></div>
+                            <div class="echo-player-copy">
+                                <div class="echo-player-title" id="echoPlayerTitle">未选择歌曲</div>
+                                <div class="echo-player-artist" id="echoPlayerArtist">Echo Library</div>
+                                <div class="echo-progress"><span class="echo-progress-fill" id="echoProgressFill"></span></div>
+                            </div>
+                            <button type="button" class="echo-player-toggle interactive" id="echoPlayerToggle" aria-label="播放或暂停">
+                                <svg viewBox="0 0 24 24" id="echoPlayerIcon"><path d="M8 5v14l11-7z"></path></svg>
+                            </button>
+                        </div>
+                        <audio id="echoAudio" preload="metadata"></audio>
+                    </div>
+                </section>
+
+                <section class="echo-page" data-echo-page="studio">
+                    <div class="studio-desk">
+                        <div class="echo-section-title" style="margin-bottom: -4px;">
+                            <h3>我的写作台</h3>
+                            <span>WORKSPACE</span>
+                        </div>
+                        <div class="paper-card desk-paper">
+                            <div class="desk-header">
+                                <div class="desk-title-input" contenteditable="true" placeholder="未命名草稿">落雨轻声</div>
+                                <span class="desk-status">WIP</span>
+                            </div>
+                            <div class="desk-lyrics" contenteditable="true" placeholder="在这里写下歌词或灵感，文字将被安静保留...">
+                                当光线穿过透明的边界<br>
+                                我把想说的话写在纸页<br>
+                                玫瑰灰的温度刚刚好<br>
+                                不需要刺耳的喧嚣...
+                            </div>
+                            <div class="desk-actions">
+                                <button type="button" class="btn-outline interactive">保存草稿</button>
+                                <button type="button" class="btn-primary interactive" onclick="alert('已发送邀请信笺！')">邀请 Char 共创</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="echo-section-title">
+                            <h3>已发行</h3>
+                            <span>PUBLISHED</span>
+                        </div>
+                        <div class="published-list">
+                            <article class="pub-card interactive">
+                                <div class="pub-vinyl"><div class="pub-center" style="background-color: #d9b7c0;"></div></div>
+                                <div class="pub-title">透明边界</div>
+                                <div class="pub-date">2026.04.20</div>
+                            </article>
+                            <article class="pub-card interactive">
+                                <div class="pub-vinyl"><div class="pub-center" style="background-color: #a9c8d8;"></div></div>
+                                <div class="pub-title">呼吸感</div>
+                                <div class="pub-date">2026.02.14</div>
+                            </article>
+                            <article class="pub-card interactive">
+                                <div class="pub-vinyl"><div class="pub-center" style="background-color: #b7c9bd;"></div></div>
+                                <div class="pub-title">Paper Texture</div>
+                                <div class="pub-date">2025.11.11</div>
+                            </article>
+                            <article class="pub-card interactive">
+                                <div class="pub-vinyl"><div class="pub-center" style="background-color: #d7cf82;"></div></div>
+                                <div class="pub-title">Olive Green</div>
+                                <div class="pub-date">2025.09.09</div>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="echo-page" data-echo-page="profile">
+                    <div class="profile-header">
+                        <div class="profile-cover" id="profile-cover">
+                            <button type="button" class="profile-cover-btn interactive" onclick="document.getElementById('cover-input').click()">更换背景</button>
+                            <input type="file" id="cover-input" accept="image/*" style="display:none;" onchange="handleImageUpload(event, 'profile-cover')">
+                        </div>
+                        <div class="profile-avatar-wrap">
+                            <div class="profile-avatar" id="profile-avatar"></div>
+                            <button type="button" class="profile-avatar-edit interactive" onclick="document.getElementById('avatar-input').click()">
+                                <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                            </button>
+                            <input type="file" id="avatar-input" accept="image/*" style="display:none;" onchange="handleImageUpload(event, 'profile-avatar')">
+                        </div>
+                    </div>
+
+                    <div class="profile-info">
+                        <div class="profile-name" contenteditable="true" placeholder="输入昵称">RinnoMuse</div>
+                        <div class="profile-id" contenteditable="true" placeholder="输入ID">@rinnomusic</div>
+                        <div class="profile-bio" contenteditable="true" placeholder="写下一句关于音乐的签名">声音是保留情绪的琥珀，记录下所有的不露声色。</div>
+                    </div>
+
+                    <div class="profile-stats paper-card">
+                        <div class="stat-item">
+                            <span class="stat-num" contenteditable="true">24</span>
+                            <span class="stat-label">Published</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-num" contenteditable="true">1.2K</span>
+                            <span class="stat-label">Followers</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-num" contenteditable="true">48</span>
+                            <span class="stat-label">Following</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-list">
+                        <div class="settings-row interactive">
+                            <span>音乐偏好分析</span>
+                            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </div>
+                        <div class="settings-row interactive">
+                            <span>我的黑胶收藏</span>
+                            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </div>
+                        <div class="settings-row interactive">
+                            <span>应用与隐私设置</span>
+                            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <nav class="echo-tabs">
+                <button type="button" class="echo-tab interactive active" data-tab-target="discover">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </button>
+                <button type="button" class="echo-tab interactive" data-tab-target="studio">
+                    <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                </button>
+                <button type="button" class="echo-tab interactive" data-tab-target="profile">
+                    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </button>
+            </nav>
+        </section>
+
+        <div class="modal-overlay" id="addMusicModal">
+            <div class="modal-content paper-card">
+                <div class="modal-header">
+                    <div class="modal-title">收录音乐</div>
+                    <button type="button" class="modal-close interactive" id="closeAddMusicModal">
+                        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+
+                <section class="ios-music-search-card">
+                    <div class="ios-music-search-head">
+                        <strong>在线音乐搜索</strong>
+                        <small>搜索歌名、歌手或专辑后，可直接带入试听音源、封面，并自动尝试匹配滚动歌词。</small>
+                    </div>
+                    <div class="ios-search-row">
+                        <input type="search" class="form-input" id="iosSearchInput" placeholder="搜索歌名 / 歌手 / 专辑">
+                        <button type="button" class="file-upload-btn interactive" id="iosSearchButton">搜索</button>
+                    </div>
+                    <div class="ios-search-results" id="iosSearchResults"></div>
+                </section>
+                
+                <div class="form-group">
+                    <label>歌曲封面</label>
+                    <div class="file-choice-row">
+                        <button type="button" class="file-upload-btn interactive" data-file-trigger="coverFile">选择封面</button>
+                        <span class="file-choice-name" id="coverFileName">未选择文件</span>
+                    </div>
+                    <input type="file" accept="image/*" class="native-file-input" id="coverFile">
+                    <input type="url" class="form-input" id="coverUrl" placeholder="或粘贴封面 URL">
+                </div>
+                
+                <div class="form-group">
+                    <label>歌名</label>
+                    <input type="text" class="form-input" id="trackTitle" placeholder="输入歌曲名称">
+                </div>
+                
+                <div class="form-group">
+                    <label>歌手名</label>
+                    <input type="text" class="form-input" id="trackArtist" placeholder="输入歌手名称">
+                </div>
+                
+                <div class="form-group">
+                    <label>音源提取</label>
+                    <div class="form-row wrap">
+                        <input type="url" class="form-input" id="audioUrl" placeholder="输入音频 URL / 试听地址" style="flex:1; min-width: 0;">
+                        <span style="font-size: 12px; color: var(--text-sub);">或</span>
+                        <div class="file-choice-row" style="flex: 1 1 150px;">
+                            <button type="button" class="file-upload-btn interactive" data-file-trigger="audioFile">本地文件</button>
+                            <span class="file-choice-name" id="audioFileName">未选择文件</span>
+                        </div>
+                        <input type="file" id="audioFile" accept="audio/*" class="native-file-input">
+                    </div>
+                    <p class="source-helper" id="audioSourceHint">本地文件会写入回响曲库；URL/在线搜索会保存可播放链接。</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>滚动歌词</label>
+                    <textarea class="form-textarea" id="lrcText" placeholder="在此处粘贴歌词文本..."></textarea>
+                    <div class="file-choice-row" style="margin-top: -2px;">
+                        <button type="button" class="file-upload-btn interactive" data-file-trigger="lrcFile">上传歌词</button>
+                        <span class="file-choice-name" id="lrcFileName">未选择文件</span>
+                        <input type="file" id="lrcFile" accept=".lrc,.txt" class="native-file-input">
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-outline interactive" id="cancelAddMusic">取消</button>
+                    <button type="button" class="btn-primary interactive" id="confirmAddMusic">确认收录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const $ = (selector, scope = document) => scope.querySelector(selector);
+        const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
+        const SVG_PLAY = '<path d="M8 5v14l11-7z"></path>';
+        const SVG_PAUSE = '<path d="M7 5h4v14H7zM13 5h4v14h-4z"></path>';
+        const ECHO_DB_NAME = 'RinnoEchoDB';
+        const ECHO_STORE = 'tracks';
+        const FILE_LABELS = { coverFile: 'coverFileName', audioFile: 'audioFileName', lrcFile: 'lrcFileName' };
+        const DEFAULT_TRACKS = [
+            { id: 'seed-whisper', title: 'Whisper of the Night', artist: 'Studio.Rinno', sourceType: 'seed', coverColor: '#d1c1c7', lyrics: '夜色像一枚安静的信封\n把不出口的话收好' },
+            { id: 'seed-blank', title: 'Leave it Blank', artist: 'SiYan & YueHua', sourceType: 'seed', coverColor: '#a6b1ba', lyrics: '留白处有风经过\n你听见了没有' },
+            { id: 'seed-paper', title: 'Paper Material', artist: 'Lies7core', sourceType: 'seed', coverColor: '#cfd5cc', lyrics: '纸页慢慢翻动\n像一次轻声靠近' }
+        ];
+        const state = { tracks: [], currentIndex: -1, searchResults: [], db: null, toastTimer: 0 };
+        const audio = $('#echoAudio');
+
+        function escapeHtml(value = '') {
+            return String(value).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+        }
+        function makeId(prefix = 'track') {
+            return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+        }
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) return resolve('');
+                const reader = new FileReader();
+                reader.onload = () => resolve(String(reader.result || ''));
+                reader.onerror = () => reject(reader.error || new Error('读取文件失败'));
+                reader.readAsDataURL(file);
+            });
+        }
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) return resolve('');
+                const reader = new FileReader();
+                reader.onload = () => resolve(String(reader.result || ''));
+                reader.onerror = () => reject(reader.error || new Error('读取歌词失败'));
+                reader.readAsText(file, 'utf-8');
+            });
+        }
+        function syncFileLabel(inputId) {
+            const input = document.getElementById(inputId);
+            const label = document.getElementById(FILE_LABELS[inputId]);
+            if (!input || !label) return;
+            const file = input.files?.[0];
+            label.textContent = file ? file.name : '未选择文件';
+        }
+        function resetFileLabels() {
+            Object.keys(FILE_LABELS).forEach(inputId => {
+                const label = document.getElementById(FILE_LABELS[inputId]);
+                if (label) label.textContent = '未选择文件';
+            });
+        }
+        function normalizeTrack(track = {}) {
+            return {
+                id: String(track.id || makeId()).trim(),
+                title: String(track.title || track.name || '未命名歌曲').trim() || '未命名歌曲',
+                artist: String(track.artist || '未知歌手').trim() || '未知歌手',
+                sourceType: String(track.sourceType || 'custom').trim() || 'custom',
+                sourceUrl: String(track.sourceUrl || track.url || '').trim(),
+                audioData: String(track.audioData || '').trim(),
+                coverUrl: String(track.coverUrl || track.pic || '').trim(),
+                coverData: String(track.coverData || '').trim(),
+                coverColor: String(track.coverColor || '').trim(),
+                lyrics: String(track.lyrics || track.lrc || '').trim(),
+                createdAt: Number(track.createdAt || Date.now())
+            };
+        }
+        function getTrackAudioSrc(track) { return track?.audioData || track?.sourceUrl || ''; }
+        function getTrackCover(track) { return track?.coverData || track?.coverUrl || ''; }
+        function getSourceLabel(track) {
+            if (track.sourceType === 'ios') return 'iOS';
+            if (track.sourceType === 'local') return '本地';
+            if (track.sourceType === 'url') return 'URL';
+            return '内置';
+        }
+        function toast(message) {
+            let el = $('#echoToast');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'echoToast';
+                el.className = 'echo-toast';
+                document.body.appendChild(el);
+            }
+            el.textContent = message;
+            el.classList.add('active');
+            clearTimeout(state.toastTimer);
+            state.toastTimer = setTimeout(() => el.classList.remove('active'), 2100);
+        }
+        function openEchoDB() {
+            return new Promise((resolve) => {
+                if (!('indexedDB' in window)) return resolve(null);
+                const request = indexedDB.open(ECHO_DB_NAME, 1);
+                request.onupgradeneeded = () => {
+                    const db = request.result;
+                    if (!db.objectStoreNames.contains(ECHO_STORE)) db.createObjectStore(ECHO_STORE, { keyPath: 'id' });
+                };
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => resolve(null);
+            });
+        }
+        function dbGetAll() {
+            return new Promise((resolve) => {
+                if (!state.db) return resolve([]);
+                const tx = state.db.transaction(ECHO_STORE, 'readonly');
+                const req = tx.objectStore(ECHO_STORE).getAll();
+                req.onsuccess = () => resolve(Array.isArray(req.result) ? req.result : []);
+                req.onerror = () => resolve([]);
+            });
+        }
+        function dbPut(track) {
+            return new Promise((resolve, reject) => {
+                if (!state.db) return resolve();
+                const tx = state.db.transaction(ECHO_STORE, 'readwrite');
+                tx.objectStore(ECHO_STORE).put(track);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error || new Error('保存失败'));
+            });
+        }
+        function dbDelete(id) {
+            return new Promise((resolve) => {
+                if (!state.db) return resolve();
+                const tx = state.db.transaction(ECHO_STORE, 'readwrite');
+                tx.objectStore(ECHO_STORE).delete(id);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => resolve();
+            });
+        }
+        async function loadTracks() {
+            state.db = await openEchoDB();
+            const saved = (await dbGetAll()).map(normalizeTrack).sort((a, b) => b.createdAt - a.createdAt);
+            state.tracks = [...saved, ...DEFAULT_TRACKS.map(normalizeTrack)];
+            renderTracks();
+        }
+        function renderTracks() {
+            const list = $('#echoTrackList');
+            if (!list) return;
+            if (!state.tracks.length) {
+                list.classList.add('is-empty');
+                list.innerHTML = '还没有收录音乐。点击右上角 +，可以上传本地音频、粘贴 URL，或通过在线音乐搜索导入试听音源。';
+                return;
+            }
+            list.classList.remove('is-empty');
+            list.innerHTML = state.tracks.map((track, index) => {
+                const cover = getTrackCover(track);
+                const coverStyle = cover
+                    ? `background-image:url(&quot;${escapeHtml(cover)}&quot;)`
+                    : `background-color:${escapeHtml(track.coverColor || '#d8cbd1')}`;
+                const canDelete = !track.id.startsWith('seed-');
+                return `
+                    <article class="track-item interactive" data-track-index="${index}">
+                        <div class="track-cover" style="${coverStyle}"></div>
+                        <div class="track-info">
+                            <div class="track-name">${escapeHtml(track.title)}</div>
+                            <div class="track-meta-line">
+                                <span class="track-artist">${escapeHtml(track.artist)}</span>
+                                <span class="track-source-pill">${escapeHtml(getSourceLabel(track))}</span>
+                            </div>
+                        </div>
+                        <button type="button" class="track-play" data-track-play="${index}" aria-label="播放 ${escapeHtml(track.title)}"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg></button>
+                        ${canDelete ? `<button type="button" class="track-delete" data-track-delete="${escapeHtml(track.id)}" aria-label="删除歌曲"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg></button>` : ''}
+                    </article>`;
+            }).join('');
+        }
+        function updatePlayer(track) {
+            const player = $('#echoPlayer');
+            if (!player || !track) return;
+            player.hidden = false;
+            $('#echoPlayerTitle').textContent = track.title;
+            $('#echoPlayerArtist').textContent = `${track.artist} · ${getSourceLabel(track)}`;
+            const cover = getTrackCover(track);
+            const coverEl = $('#echoPlayerCover');
+            coverEl.style.backgroundImage = cover ? `url("${cover}")` : '';
+            coverEl.style.backgroundColor = track.coverColor || '#d8cbd1';
+            updatePlayIcon();
+        }
+        function updatePlayIcon() {
+            const icon = $('#echoPlayerIcon');
+            if (icon) icon.innerHTML = audio && !audio.paused ? SVG_PAUSE : SVG_PLAY;
+        }
+        async function playTrack(index) {
+            const track = state.tracks[index];
+            if (!track) return;
+            const src = getTrackAudioSrc(track);
+            if (!src) {
+                state.currentIndex = index;
+                updatePlayer(track);
+                toast('这首内置示例没有音源，请先收录本地 / URL / iOS 歌曲。');
+                return;
+            }
+            if (state.currentIndex !== index || audio.src !== src) {
+                state.currentIndex = index;
+                audio.src = src;
+                updatePlayer(track);
+            }
+            try {
+                await audio.play();
+                updatePlayIcon();
+            } catch (error) {
+                toast('播放失败，请检查音源链接或浏览器权限。');
+            }
+        }
+        function togglePlayer() {
+            if (!audio.src) {
+                if (state.currentIndex >= 0) return playTrack(state.currentIndex);
+                return toast('先选择一首歌曲。');
+            }
+            if (audio.paused) audio.play().then(updatePlayIcon).catch(() => toast('播放失败，请重新选择歌曲。'));
+            else { audio.pause(); updatePlayIcon(); }
+        }
+        function resetForm() {
+            ['trackTitle', 'trackArtist', 'audioUrl', 'coverUrl', 'lrcText', 'iosSearchInput'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+            ['audioFile', 'coverFile', 'lrcFile'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+            resetFileLabels();
+            const hint = $('#audioSourceHint');
+            if (hint) hint.textContent = '本地文件会写入回响曲库；URL/在线搜索会保存可播放链接。';
+            const results = $('#iosSearchResults');
+            if (results) { results.classList.remove('active'); results.innerHTML = ''; }
+            state.searchResults = [];
+        }
+        function openMusicModal() { resetForm(); $('#addMusicModal')?.classList.add('active'); }
+        function closeMusicModal() { $('#addMusicModal')?.classList.remove('active'); }
+        async function saveCustomTrack(sourceType = 'custom') {
+            const title = $('#trackTitle')?.value.trim() || '';
+            const artist = $('#trackArtist')?.value.trim() || '未知歌手';
+            const audioUrl = $('#audioUrl')?.value.trim() || '';
+            const coverUrl = $('#coverUrl')?.value.trim() || '';
+            const lrcText = $('#lrcText')?.value.trim() || '';
+            const audioFile = $('#audioFile')?.files?.[0] || null;
+            const coverFile = $('#coverFile')?.files?.[0] || null;
+            if (!title) return toast('请先填写歌名。');
+            if (!audioFile && !audioUrl) return toast('请上传本地音频或填写音频 URL。');
+            try {
+                const [audioData, coverData] = await Promise.all([readFileAsDataURL(audioFile), readFileAsDataURL(coverFile)]);
+                const track = normalizeTrack({
+                    id: makeId('echo'),
+                    title,
+                    artist,
+                    sourceType: audioFile ? 'local' : (sourceType === 'ios' ? 'ios' : 'url'),
+                    sourceUrl: audioData ? '' : audioUrl,
+                    audioData,
+                    coverUrl: coverData ? '' : coverUrl,
+                    coverData,
+                    lyrics: lrcText,
+                    createdAt: Date.now()
+                });
+                await dbPut(track);
+                state.tracks.unshift(track);
+                renderTracks();
+                closeMusicModal();
+                toast(`已收录《${track.title}》。`);
+            } catch (error) {
+                toast('保存失败，请换一个音频文件或链接。');
+            }
+        }
+        function renderSearchState(message) {
+            const box = $('#iosSearchResults');
+            if (!box) return;
+            box.classList.add('active');
+            box.innerHTML = `<div class="ios-search-state">${escapeHtml(message)}</div>`;
+        }
+        async function searchIOSMusic() {
+            const keyword = $('#iosSearchInput')?.value.trim() || '';
+            if (!keyword) return toast('请输入歌名或歌手。');
+            renderSearchState('正在连接在线音乐搜索…');
+            try {
+                const url = `https://itunes.apple.com/search?term=${encodeURIComponent(keyword)}&media=music&entity=song&limit=15&country=CN`;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('search failed');
+                const data = await response.json();
+                state.searchResults = (data.results || []).map(item => normalizeTrack({
+                    id: makeId('ios'),
+                    title: item.trackName || '未知歌曲',
+                    artist: item.artistName || '未知歌手',
+                    sourceType: 'ios',
+                    sourceUrl: item.previewUrl || '',
+                    coverUrl: String(item.artworkUrl100 || '').replace('100x100bb', '600x600bb'),
+                    lyrics: '[00:00.00] 正在播放试听片段\n[00:03.00] 可在回响里继续替换完整歌词',
+                    createdAt: Date.now()
+                })).filter(track => track.sourceUrl);
+                if (!state.searchResults.length) return renderSearchState('没有找到可试听音源，换个关键词试试。');
+                const box = $('#iosSearchResults');
+                box.classList.add('active');
+                box.innerHTML = state.searchResults.map((track, index) => `
+                    <article class="ios-result-item">
+                        <div class="ios-result-cover" style="${track.coverUrl ? `background-image:url(&quot;${escapeHtml(track.coverUrl)}&quot;)` : ''}"></div>
+                        <div class="ios-result-copy">
+                            <div class="ios-result-title">${escapeHtml(track.title)}</div>
+                            <div class="ios-result-artist">${escapeHtml(track.artist)}</div>
+                        </div>
+                        <button type="button" class="ios-import-btn interactive" data-ios-import="${index}">导入</button>
+                    </article>
+                `).join('');
+            } catch (error) {
+                renderSearchState('搜索失败，请检查网络或稍后再试。');
+            }
+        }
+        async function importIOSResult(index) {
+            const track = state.searchResults[index];
+            if (!track) return;
+            $('#trackTitle').value = track.title;
+            $('#trackArtist').value = track.artist;
+            $('#audioUrl').value = track.sourceUrl;
+            $('#coverUrl').value = track.coverUrl;
+            $('#lrcText').value = track.lyrics;
+            const hint = $('#audioSourceHint');
+            if (hint) hint.textContent = '已导入试听音源；点击“确认收录”后会写入回响曲库。';
+            try {
+                const lrcUrl = `https://lrclib.net/api/search?track_name=${encodeURIComponent(track.title)}&artist_name=${encodeURIComponent(track.artist)}`;
+                const response = await fetch(lrcUrl);
+                if (response.ok) {
+                    const list = await response.json();
+                    const best = Array.isArray(list) ? (list.find(item => item.syncedLyrics) || list[0]) : null;
+                    if (best?.syncedLyrics) $('#lrcText').value = best.syncedLyrics;
+                    else if (best?.plainLyrics) $('#lrcText').value = best.plainLyrics.split('\\n').map((line, i) => `[00:${String(i % 60).padStart(2, '0')}.00] ${line}`).join('\\n');
+                }
+            } catch (error) {}
+            toast(`已导入《${track.title}》，确认后收录。`);
+        }
+        function bindEvents() {
+            $$('.echo-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.getAttribute('data-tab-target');
+                    $$('.echo-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    $$('.echo-page').forEach(page => {
+                        const active = page.getAttribute('data-echo-page') === target;
+                        page.classList.toggle('active', active);
+                        page.hidden = !active;
+                    });
+                });
+            });
+            $('#openAddMusicModal')?.addEventListener('click', openMusicModal);
+            $('#closeAddMusicModal')?.addEventListener('click', closeMusicModal);
+            $('#cancelAddMusic')?.addEventListener('click', closeMusicModal);
+            $('#confirmAddMusic')?.addEventListener('click', () => saveCustomTrack($('#audioUrl')?.value.includes('itunes.apple.com') || $('#audioUrl')?.value.includes('mzstatic.com') ? 'ios' : 'custom'));
+            $('#iosSearchButton')?.addEventListener('click', searchIOSMusic);
+            $('#iosSearchInput')?.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); searchIOSMusic(); } });
+            $('#echoPlayerToggle')?.addEventListener('click', togglePlayer);
+            $$('[data-file-trigger]').forEach(button => {
+                button.addEventListener('click', () => document.getElementById(button.getAttribute('data-file-trigger') || '')?.click());
+            });
+            $('#coverFile')?.addEventListener('change', () => syncFileLabel('coverFile'));
+            $('#audioFile')?.addEventListener('change', event => {
+                syncFileLabel('audioFile');
+                const file = event.target.files?.[0];
+                if (file && !$('#trackTitle').value.trim()) $('#trackTitle').value = file.name.replace(/\.[^.]+$/, '');
+            });
+            $('#lrcFile')?.addEventListener('change', async event => {
+                syncFileLabel('lrcFile');
+                const file = event.target.files?.[0];
+                if (file) $('#lrcText').value = await readFileAsText(file);
+            });
+            $('#addMusicModal')?.addEventListener('click', event => { if (event.target === event.currentTarget) closeMusicModal(); });
+            document.addEventListener('click', event => {
+                const playBtn = event.target.closest('[data-track-play]');
+                if (playBtn) { event.stopPropagation(); playTrack(Number(playBtn.getAttribute('data-track-play'))); return; }
+                const card = event.target.closest('[data-track-index]');
+                if (card && !event.target.closest('[data-track-delete]')) { playTrack(Number(card.getAttribute('data-track-index'))); return; }
+                const deleteBtn = event.target.closest('[data-track-delete]');
+                if (deleteBtn) {
+                    event.stopPropagation();
+                    const id = deleteBtn.getAttribute('data-track-delete');
+                    const index = state.tracks.findIndex(track => track.id === id);
+                    const track = state.tracks[index];
+                    if (!track) return;
+                    dbDelete(id).then(() => {
+                        state.tracks.splice(index, 1);
+                        renderTracks();
+                        if (state.currentIndex === index) { audio.pause(); audio.removeAttribute('src'); $('#echoPlayer').hidden = true; state.currentIndex = -1; }
+                        toast(`已移除《${track.title}》。`);
+                    });
+                    return;
+                }
+                const importBtn = event.target.closest('[data-ios-import]');
+                if (importBtn) importIOSResult(Number(importBtn.getAttribute('data-ios-import')));
+            });
+            audio?.addEventListener('timeupdate', () => {
+                const fill = $('#echoProgressFill');
+                if (fill && Number.isFinite(audio.duration) && audio.duration > 0) fill.style.width = `${Math.min(100, (audio.currentTime / audio.duration) * 100)}%`;
+            });
+            audio?.addEventListener('play', updatePlayIcon);
+            audio?.addEventListener('pause', updatePlayIcon);
+            audio?.addEventListener('ended', updatePlayIcon);
+        }
+        function handleImageUpload(event, targetId) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            readFileAsDataURL(file).then(dataUrl => {
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) {
+                    targetEl.style.backgroundImage = `url("${dataUrl}")`;
+                    targetEl.style.backgroundSize = 'cover';
+                    targetEl.style.backgroundPosition = 'center';
+                }
+            });
+        }
+        window.handleImageUpload = handleImageUpload;
+        bindEvents();
+        loadTracks();
+    </script>
+</body>
+</html>

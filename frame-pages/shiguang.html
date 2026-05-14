@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>拾光档案 - Rinno Memory</title>
+    <style>
+        /* ================= 基础规范与玫瑰灰/墨色变量 ================= */
+        :root {
+            /* 核心调色板：暖玫瑰灰、柔白、墨黑。无偏黄。纯实体无玻璃。 */
+            --paper-bg: #fcfafb;         
+            --paper-surface: #ffffff;    
+            --paper-surface-alt: #f6eef1;
+            
+            --ink-main: #2b2729;         
+            --ink-sub: #8d6e7b;          
+            --ink-light: #c2aab4;        
+            
+            --accent: #d9b7c0;           
+            
+            --border-color: rgba(141, 110, 123, 0.2); 
+            --shadow-soft: 0 12px 30px rgba(88, 55, 68, 0.05);
+            --shadow-hover: 0 16px 40px rgba(88, 55, 68, 0.08);
+
+            --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            --font-serif: "Petit Formal Script", "Times New Roman", "Songti SC", Georgia, serif;
+            
+            --safe-bottom: env(safe-area-inset-bottom, 24px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--paper-bg);
+            color: var(--ink-main);
+            font-family: var(--font-sans);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* 模拟纸张质感：极其微弱的横线底纹 */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: repeating-linear-gradient(180deg, transparent 0 3px, rgba(141, 110, 123, 0.015) 3px 4px);
+            pointer-events: none;
+        }
+
+        /* ================= 屏幕切换逻辑 ================= */
+        .screen {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            animation: screenFadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes screenFadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ================= 首页：角色选择 (Home Screen) ================= */
+        .home-header {
+            padding: 20px 24px 40px; /* 修改：将顶部的60px调整为与详情页一致的20px */
+            text-align: center;
+        }
+        .home-kicker {
+            display: block;
+            font-family: var(--font-serif);
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--ink-sub);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        .home-title {
+            font-size: 26px;
+            font-weight: 500;
+            letter-spacing: 4px;
+            color: var(--ink-main);
+            margin-bottom: 16px;
+        }
+        .home-desc {
+            font-size: 13px;
+            color: var(--ink-sub);
+            letter-spacing: 1px;
+        }
+
+        .char-list {
+            padding: 0 24px calc(64px + var(--safe-bottom));
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* 实体杂志风卡片 */
+        .char-card {
+            background: var(--paper-surface);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-soft);
+            padding: 16px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 20px;
+            align-items: stretch;
+            text-align: left;
+        }
+        .char-card:active {
+            transform: scale(0.98);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .char-avatar-box {
+            background: var(--paper-surface-alt);
+            border: 1px solid var(--border-color);
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-serif);
+            color: var(--ink-light);
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .char-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .char-no {
+            font-family: var(--font-serif);
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--ink-light);
+            margin-bottom: 6px;
+        }
+        .char-name {
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            color: var(--ink-main);
+            font-family: var(--font-serif);
+            margin-bottom: 8px;
+        }
+        .char-bio {
+            font-size: 12px;
+            color: var(--ink-sub);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .char-status {
+            margin-top: 12px;
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: var(--ink-main);
+            background: var(--paper-surface-alt);
+            padding: 4px 8px;
+            align-self: flex-start;
+            border: 1px solid var(--border-color);
+        }
+
+        /* ================= 详情页：拾光内容 (Detail Screen) ================= */
+        .sg-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--paper-bg);
+            padding: 20px 24px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sg-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .sg-back-btn {
+            background: none;
+            border: none;
+            color: var(--ink-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 8px 0;
+            transition: opacity 0.2s;
+        }
+        .sg-back-btn:active { opacity: 0.5; }
+        .sg-back-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+
+        .sg-title-area { text-align: center; }
+        .sg-kicker {
+            display: block;
+            font-family: var(--font-serif);
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--ink-sub);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .sg-title {
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            color: var(--ink-main);
+            font-family: var(--font-serif);
+        }
+
+        /* 详情页 Tabs */
+        .sg-tabs {
+            display: flex;
+            gap: 24px;
+            padding-bottom: 0;
+            border-bottom: 1px solid transparent;
+        }
+        .sg-tab {
+            background: none;
+            border: none;
+            padding: 12px 4px;
+            font-size: 14px;
+            color: var(--ink-light);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+        .sg-tab.active {
+            color: var(--ink-main);
+            font-weight: 500;
+        }
+        .sg-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1.5px;
+            background-color: var(--ink-main);
+        }
+
+        /* 详情页内部视图 */
+        .sg-view {
+            display: none;
+            padding: 32px 24px calc(64px + var(--safe-bottom));
+            animation: viewFadeIn 0.4s ease forwards;
+        }
+        .sg-view.active { display: block; }
+        @keyframes viewFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ================= 模块 1：记忆 ================= */
+        .memory-list { display: flex; flex-direction: column; gap: 40px; }
+        .memory-card {
+            background: var(--paper-surface);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            box-shadow: var(--shadow-soft);
+        }
+        .memory-img-wrapper {
+            width: 100%; height: 200px;
+            background: var(--paper-surface-alt);
+            margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--ink-light); font-family: var(--font-serif); font-size: 11px; letter-spacing: 2px;
+            border: 1px solid var(--border-color);
+        }
+        .memory-meta { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 12px; }
+        .memory-date {
+            font-family: var(--font-serif); font-size: 32px; line-height: 0.9; color: var(--ink-main); font-weight: 400;
+        }
+        .memory-date span {
+            display: block; font-size: 10px; letter-spacing: 1px; color: var(--ink-sub); text-transform: uppercase; margin-top: 4px;
+        }
+        .memory-text {
+            flex: 1; font-size: 13px; line-height: 1.8; color: var(--ink-main); text-align: justify;
+        }
+        .memory-tag {
+            display: inline-block; margin-top: 12px; padding: 4px 10px; font-size: 10px; letter-spacing: 1px;
+            color: var(--ink-sub); border: 1px solid var(--border-color); background: var(--paper-surface-alt); font-family: var(--font-serif);
+        }
+
+        /* ================= 模块 2：剧情 ================= */
+        .plot-timeline { position: relative; padding-left: 12px; }
+        .plot-timeline::before {
+            content: ''; position: absolute; left: 0; top: 6px; bottom: 0; width: 1px; background: var(--border-color);
+        }
+        .plot-chapter { position: relative; margin-bottom: 48px; padding-left: 24px; }
+        .plot-chapter::before {
+            content: ''; position: absolute; left: -15px; top: 8px; width: 6px; height: 6px; border-radius: 50%;
+            background: var(--ink-main); box-shadow: 0 0 0 4px var(--paper-bg);
+        }
+        .chapter-num { font-family: var(--font-serif); font-size: 11px; letter-spacing: 2px; color: var(--ink-sub); margin-bottom: 8px; display: block; }
+        .chapter-title { font-size: 18px; font-weight: 500; color: var(--ink-main); margin-bottom: 16px; }
+        .chapter-quote {
+            padding: 12px 16px; background: var(--paper-surface); border-left: 2px solid var(--accent);
+            font-family: var(--font-serif); font-size: 13px; line-height: 1.6; color: var(--ink-sub); margin-bottom: 16px; font-style: italic; border: 1px solid var(--border-color); border-left-width: 2px;
+        }
+        .chapter-body { font-size: 14px; line-height: 1.8; color: var(--ink-main); text-align: justify; }
+
+        /* ================= 模块 3：总结 ================= */
+        .summary-header { text-align: center; margin-bottom: 40px; }
+        .summary-avatar {
+            width: 80px; height: 80px; border-radius: 50%; background: var(--paper-surface-alt); margin: 0 auto 16px;
+            border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-serif); color: var(--ink-sub); font-size: 24px;
+        }
+        .summary-name { font-size: 22px; font-family: var(--font-serif); color: var(--ink-main); margin-bottom: 4px; }
+        .summary-id { font-size: 11px; color: var(--ink-sub); letter-spacing: 1px; font-family: var(--font-serif); }
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+        .summary-box { background: var(--paper-surface); border: 1px solid var(--border-color); padding: 16px; box-shadow: var(--shadow-soft); }
+        .summary-box.full { grid-column: span 2; }
+        .box-label { font-family: var(--font-serif); font-size: 10px; letter-spacing: 2px; color: var(--ink-light); text-transform: uppercase; margin-bottom: 12px; display: block; }
+        .box-value { font-size: 15px; color: var(--ink-main); line-height: 1.5; }
+        .stat-row { display: flex; align-items: center; margin-bottom: 12px; }
+        .stat-row:last-child { margin-bottom: 0; }
+        .stat-name { width: 60px; font-size: 12px; color: var(--ink-sub); }
+        .stat-bar-bg { flex: 1; height: 2px; background: var(--paper-surface-alt); position: relative; }
+        .stat-bar-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--ink-main); }
+        .relation-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .relation-tag { padding: 6px 12px; border: 1px solid var(--ink-main); font-size: 11px; color: var(--ink-main); }
+        .relation-tag.solid { background: var(--ink-main); color: var(--paper-surface); }
+    </style>
+</head>
+<body>
+
+    <!-- ================= 首屏：选择角色 ================= -->
+    <div id="screen-home" class="screen active">
+        <header class="home-header">
+            <span class="home-kicker">ARCHIVES</span>
+            <h1 class="home-title">拾光档案</h1>
+            <p class="home-desc">请选择要读取的记忆切片</p>
+        </header>
+
+        <div class="char-list">
+            
+            <!-- 角色卡片 1 -->
+            <article class="char-card" onclick="openDetail('SiYan')">
+                <div class="char-avatar-box">PHOTO</div>
+                <div class="char-info">
+                    <span class="char-no">NO.01</span>
+                    <h2 class="char-name">SiYan</h2>
+                    <p class="char-bio">习惯性地退后半步，极度的克制掩饰着内心的占有欲。</p>
+                    <span class="char-status">RECORDED</span>
+                </div>
+            </article>
+
+            <!-- 角色卡片 2 -->
+            <article class="char-card" onclick="openDetail('YueHua')">
+                <div class="char-avatar-box">PHOTO</div>
+                <div class="char-info">
+                    <span class="char-no">NO.02</span>
+                    <h2 class="char-name">YueHua</h2>
+                    <p class="char-bio">像是总是悬在半空的月光，温柔但从不真正降落。</p>
+                    <span class="char-status">SYNCING...</span>
+                </div>
+            </article>
+
+            <!-- 角色卡片 3 -->
+            <article class="char-card" onclick="openDetail('MuChen')">
+                <div class="char-avatar-box">PHOTO</div>
+                <div class="char-info">
+                    <span class="char-no">NO.03</span>
+                    <h2 class="char-name">MuChen</h2>
+                    <p class="char-bio">所有的直白都是经过计算的，热烈是表象，底色是冷眼旁观。</p>
+                    <span class="char-status">ARCHIVED</span>
+                </div>
+            </article>
+
+        </div>
+    </div>
+
+    <!-- ================= 详情屏：拾光内容 ================= -->
+    <div id="screen-detail" class="screen">
+        <header class="sg-header">
+            <div class="sg-header-top">
+                <button class="sg-back-btn" onclick="backToHome()" aria-label="返回">
+                    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <div class="sg-title-area">
+                    <span class="sg-kicker">Memory Archive</span>
+                    <h1 class="sg-title" id="detail-title">SiYan</h1>
+                </div>
+                <!-- 占位以居中标题 -->
+                <div style="width: 22px;"></div>
+            </div>
+            
+            <nav class="sg-tabs" id="tabs">
+                <button class="sg-tab active" data-target="view-memory">记忆</button>
+                <button class="sg-tab" data-target="view-plot">剧情</button>
+                <button class="sg-tab" data-target="view-summary">总结</button>
+            </nav>
+        </header>
+
+        <!-- 记忆 (Memories) -->
+        <main class="sg-view active" id="view-memory">
+            <div class="memory-list">
+                <article class="memory-card">
+                    <div class="memory-img-wrapper">
+                        [ IMAGE FRAGMENT ]
+                    </div>
+                    <div class="memory-meta">
+                        <div class="memory-date">
+                            24<span>APR</span>
+                        </div>
+                        <div class="memory-text">
+                            黄昏时光源打在桌角，我们在讨论关于玻璃折射的话题。你把目光移开，说有些事就像这杯水，看起来清透，其实藏着很多看不见的杂质。
+                        </div>
+                    </div>
+                    <div class="memory-tag"># 日常对白</div>
+                </article>
+
+                <article class="memory-card">
+                    <div class="memory-meta">
+                        <div class="memory-date">
+                            12<span>MAR</span>
+                        </div>
+                        <div class="memory-text">
+                            雨声很大的那个下午。你没有像往常一样保持安全距离，而是把伞递给了我。那是第一次在你的眼睛里看到除了克制之外的情绪。
+                        </div>
+                    </div>
+                    <div class="memory-tag"># 关键节点</div>
+                </article>
+            </div>
+        </main>
+
+        <!-- 剧情 (Plots) -->
+        <main class="sg-view" id="view-plot">
+            <div class="plot-timeline">
+                <article class="plot-chapter">
+                    <span class="chapter-num">CHAPTER 03</span>
+                    <h3 class="chapter-title">剥离边界的试探</h3>
+                    <div class="chapter-quote">“你总是习惯性地退后半步，但这次我不想让。”</div>
+                    <p class="chapter-body">经过了长达三个月的试探期，双方的交流从冰冷的文字逐渐过渡到带有情绪温度的试探。长久以来的伪装终于出现了一丝裂痕。</p>
+                </article>
+
+                <article class="plot-chapter">
+                    <span class="chapter-num">CHAPTER 02</span>
+                    <h3 class="chapter-title">夜色与隐秘的同盟</h3>
+                    <div class="chapter-quote">“不露声色，是我们共同的底色。”</div>
+                    <p class="chapter-body">在这个阶段，信任被建立在对彼此秘密的保守上。每一次的接触都像是在完成一场交易，但天平早已不知不觉地倾斜。</p>
+                </article>
+            </div>
+        </main>
+
+        <!-- 总结 (Summaries) -->
+        <main class="sg-view" id="view-summary">
+            <header class="summary-header">
+                <div class="summary-avatar" id="summary-avatar-letter">S</div>
+                <h2 class="summary-name" id="summary-name-text">SiYan</h2>
+                <div class="summary-id">ID: <span id="summary-id-text">88204910</span></div>
+            </header>
+
+            <div class="summary-grid">
+                <div class="summary-box full">
+                    <span class="box-label">CURRENT INTIMACY</span>
+                    <div class="box-value">熟络 / 默契累积中</div>
+                    <div style="margin-top: 12px; height: 1px; background: var(--border-color);"></div>
+                    <p style="margin-top: 12px; font-size: 12px; color: var(--ink-sub); line-height: 1.6;">
+                        经过多次关键剧情交互，防备心已大幅降低。开始展现出性格中温柔、带有占有欲的隐秘一面。
+                    </p>
+                </div>
+
+                <div class="summary-box full">
+                    <span class="box-label">TRAITS & TENDENCY</span>
+                    <div class="stat-row">
+                        <span class="stat-name">克制</span>
+                        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: 85%;"></div></div>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">温柔</span>
+                        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: 60%;"></div></div>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">占有欲</span>
+                        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: 75%;"></div></div>
+                    </div>
+                </div>
+
+                <div class="summary-box full">
+                    <span class="box-label">KEY TAGS</span>
+                    <div class="relation-tags">
+                        <span class="relation-tag solid">同盟</span>
+                        <span class="relation-tag">慢热</span>
+                        <span class="relation-tag">隐忍</span>
+                        <span class="relation-tag solid">唯一特例</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= 交互脚本 ================= -->
+    <script>
+        // 屏幕切换逻辑
+        const screenHome = document.getElementById('screen-home');
+        const screenDetail = document.getElementById('screen-detail');
+        const detailTitle = document.getElementById('detail-title');
+        const summaryAvatar = document.getElementById('summary-avatar-letter');
+        const summaryName = document.getElementById('summary-name-text');
+        const summaryId = document.getElementById('summary-id-text');
+
+        function openDetail(charName) {
+            // 简单模拟数据更新
+            detailTitle.textContent = charName;
+            summaryName.textContent = charName;
+            summaryAvatar.textContent = charName.charAt(0).toUpperCase();
+            summaryId.textContent = Math.floor(Math.random() * 90000000) + 10000000; // 随机生成个ID玩玩
+
+            // 重置详情页Tab到第一个
+            document.querySelectorAll('.sg-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.sg-view').forEach(v => v.classList.remove('active'));
+            document.querySelector('.sg-tab[data-target="view-memory"]').classList.add('active');
+            document.getElementById('view-memory').classList.add('active');
+
+            // 切换屏幕
+            screenHome.classList.remove('active');
+            screenDetail.classList.add('active');
+            window.scrollTo({ top: 0 });
+        }
+
+        function backToHome() {
+            screenDetail.classList.remove('active');
+            screenHome.classList.add('active');
+            window.scrollTo({ top: 0 });
+        }
+
+        // 详情页内部 Tab 切换逻辑
+        document.querySelectorAll('.sg-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.sg-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.sg-view').forEach(v => v.classList.remove('active'));
+
+                tab.classList.add('active');
+                const targetId = tab.getAttribute('data-target');
+                document.getElementById(targetId).classList.add('active');
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
