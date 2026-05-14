@@ -35,7 +35,6 @@ let privateContactChatExpandedVoiceMessageIds = new Set();
 let privateContactChatComposerPanel = '';
 let privateContactChatComposeModalState = null;
 let privateContactChatComposerViewportDismissBound = false;
-let privateContactChatLastEnterSubmitAt = 0;
 let privateContactChatPromptStickerInventory = [];
 let privateStickerLibraryState = null;
 let privateStickerLibraryLoadedFor = '';
@@ -7427,8 +7426,6 @@ function getPrivateContactChatComposerText() {
 function syncPrivateContactChatExpandButton() {
     const button = document.getElementById('private-contact-chat-expand');
     const emojiButton = document.getElementById('private-contact-chat-emoji');
-    const leftSendButton = document.getElementById('private-contact-chat-left-send');
-    const hasText = Boolean(getPrivateContactChatComposerText());
     if (button) {
         button.type = 'button';
         button.dataset.mode = 'more';
@@ -7437,10 +7434,6 @@ function syncPrivateContactChatExpandButton() {
         button.classList.toggle('is-active', privateContactChatComposerPanel === 'more');
         button.classList.remove('is-send');
         button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>';
-    }
-    if (leftSendButton) {
-        leftSendButton.classList.toggle('has-text', hasText);
-        leftSendButton.setAttribute('aria-label', hasText ? '发送消息' : '触发角色回复');
     }
     if (emojiButton) {
         emojiButton.setAttribute('aria-expanded', privateContactChatComposerPanel === 'sticker' ? 'true' : 'false');
@@ -8130,7 +8123,6 @@ function createPrivateContactChatShellMarkup() {
                         <button class="interactive private-contact-chat-camera" id="private-contact-chat-camera" type="button" aria-label="拍摄内容描述">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h4l2-3h4l2 3h4v11H4z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                         </button>
-                        <button class="interactive private-contact-chat-left-send" id="private-contact-chat-left-send" type="submit" aria-label="发送消息">发送</button>
                         <div class="private-contact-chat-input-shell">
                             <div class="private-contact-chat-input-row">
                                 <input class="private-contact-chat-input" id="private-contact-chat-input" name="private_contact_chat_input" type="text" placeholder="${escapePrivateHtml(getPrivateContactChatPlaceholder())}" autocomplete="off" enterkeyhint="send" inputmode="text" aria-label="输入消息">
@@ -8260,10 +8252,9 @@ async function sendPrivateContactChatCameraImage(file) {
         }));
         privateContactChatQuotedMessageId = '';
         renderPrivateThreads();
-        renderPrivateContactChatPage(contact.id);
+        renderPrivateContactChatPage(contact.id, { scrollToBottom: false });
         await savePrivateState();
         requestAnimationFrame(() => {
-            syncPrivateContactChatComposerUi();
             scrollPrivateContactChatContentToBottom('smooth');
             document.getElementById('private-contact-chat-input')?.focus();
         });
@@ -8308,10 +8299,9 @@ async function sendPrivateContactChatRichUserMessage(type, payload = {}, toastTe
     }));
     privateContactChatQuotedMessageId = '';
     renderPrivateThreads();
-    renderPrivateContactChatPage(contact.id);
+    renderPrivateContactChatPage(contact.id, { scrollToBottom: false });
     await savePrivateState();
     requestAnimationFrame(() => {
-        syncPrivateContactChatComposerUi();
         scrollPrivateContactChatContentToBottom('smooth');
         document.getElementById('private-contact-chat-input')?.focus();
     });
@@ -8449,48 +8439,6 @@ async function handlePrivateContactChatMoreAction(action = '') {
 }
 
 
-function isPrivateContactChatEnterSubmitEvent(event) {
-    if (!event) return false;
-    const key = String(event.key || '').toLowerCase();
-    const code = String(event.code || '').toLowerCase();
-    const isEnter = key === 'enter' || code === 'enter' || event.keyCode === 13 || event.which === 13;
-    if (!isEnter) return false;
-    if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) return false;
-    const value = String(event.currentTarget?.value || '').trim();
-    if (event.isComposing && value) return false;
-    return true;
-}
-
-function submitPrivateContactChatComposerFromKeyboard(event) {
-    const now = Date.now();
-    if (now - privateContactChatLastEnterSubmitAt < 220) {
-        event?.preventDefault?.();
-        event?.stopPropagation?.();
-        return true;
-    }
-    privateContactChatLastEnterSubmitAt = now;
-    event?.preventDefault?.();
-    event?.stopPropagation?.();
-    void submitPrivateContactChatComposer({
-        source: 'keyboard-enter',
-        contactId: privateActiveContactChatId
-    });
-    return true;
-}
-
-function submitPrivateContactChatComposerFromEnter(event) {
-    if (!isPrivateContactChatEnterSubmitEvent(event)) return false;
-    return submitPrivateContactChatComposerFromKeyboard(event);
-}
-
-function handlePrivateContactChatLineBreakInput(event) {
-    if (!event) return false;
-    const inputType = String(event.inputType || '').toLowerCase();
-    if (inputType !== 'insertlinebreak' && inputType !== 'insertparagraph') return false;
-    if (event.isComposing) return false;
-    return submitPrivateContactChatComposerFromKeyboard(event);
-}
-
 function ensurePrivateContactChatPage() {
     let page = document.getElementById('private-contact-chat-page');
     if (page) return page;
@@ -8518,17 +8466,16 @@ function ensurePrivateContactChatPage() {
     privateContactChatComposerInput?.addEventListener('compositionend', () => {
         syncPrivateContactChatComposerUi();
     });
-    privateContactChatComposerInput?.addEventListener('beforeinput', event => {
-        handlePrivateContactChatLineBreakInput(event);
-    });
     privateContactChatComposerInput?.addEventListener('keydown', event => {
-        submitPrivateContactChatComposerFromEnter(event);
-    });
-    privateContactChatComposerInput?.addEventListener('keypress', event => {
-        submitPrivateContactChatComposerFromEnter(event);
-    });
-    privateContactChatComposerInput?.addEventListener('keyup', event => {
-        submitPrivateContactChatComposerFromEnter(event);
+        if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
+        event.preventDefault();
+        const hasText = Boolean(String(event.currentTarget?.value || '').trim());
+        if (!hasText) {
+            void submitPrivateContactChatComposer({ source: 'keyboard-enter', contactId: privateActiveContactChatId });
+            return;
+        }
+        const form = page.querySelector('#private-contact-chat-form');
+        if (form) form.requestSubmit();
     });
     page.querySelector('#private-contact-chat-quote-clear')?.addEventListener('click', event => {
         event.preventDefault();
@@ -8902,10 +8849,9 @@ async function sendPrivateContactChatMessage() {
     if (input) input.value = '';
     privateContactChatQuotedMessageId = '';
     renderPrivateThreads();
-    renderPrivateContactChatPage(contact.id);
+    renderPrivateContactChatPage(contact.id, { scrollToBottom: false });
     await savePrivateState();
     requestAnimationFrame(() => {
-        syncPrivateContactChatComposerUi();
         scrollPrivateContactChatContentToBottom('smooth');
         input?.focus();
     });
@@ -12477,7 +12423,7 @@ async function appendPrivateContactChatAssistantMessage(contactId, message) {
     }));
     renderPrivateThreads();
     if (isVisibleChat) {
-        renderPrivateContactChatPage(safeContactId);
+        renderPrivateContactChatPage(safeContactId, { scrollToBottom: false });
     }
     await savePrivateState();
     if (isVisibleChat) {
@@ -12502,9 +12448,13 @@ async function replacePrivateContactChatMessage(contactId, messageId, updater) {
         ))
     }));
     renderPrivateThreads();
-    if (privateActiveContactChatId === safeContactId) renderPrivateContactChatPage(safeContactId);
+    if (privateActiveContactChatId === safeContactId) {
+        renderPrivateContactChatPage(safeContactId, { scrollToBottom: false });
+    }
     await savePrivateState();
-    requestAnimationFrame(() => scrollPrivateContactChatContentToBottom('smooth'));
+    if (privateActiveContactChatId === safeContactId) {
+        requestAnimationFrame(() => scrollPrivateContactChatContentToBottom('smooth'));
+    }
     return getPrivateContactChatMessage(safeMessageId, safeContactId);
 }
 
@@ -12543,7 +12493,9 @@ async function appendPrivateContactChatNudgeEvent(contactId, actorRole = 'assist
         ]
     }));
     renderPrivateThreads();
-    if (isVisibleChat) renderPrivateContactChatPage(safeContactId);
+    if (isVisibleChat) {
+        renderPrivateContactChatPage(safeContactId, { scrollToBottom: false });
+    }
     await savePrivateState();
     if (isVisibleChat) {
         requestAnimationFrame(() => scrollPrivateContactChatContentToBottom('smooth'));
@@ -12793,7 +12745,7 @@ async function requestPrivateContactChatAssistantReply(contact) {
         privateContactChatSendingId = '';
         renderPrivateThreads();
         if (privateActiveContactChatId === safeContactId) {
-            renderPrivateContactChatPage(safeContactId);
+            renderPrivateContactChatPage(safeContactId, { scrollToBottom: false });
             requestAnimationFrame(() => {
                 document.getElementById('private-contact-chat-input')?.focus();
                 scrollPrivateContactChatContentToBottom('smooth');
